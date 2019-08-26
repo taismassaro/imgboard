@@ -1,0 +1,111 @@
+:root {
+    --main: #d2fafb;
+    --light: #51dacf;
+    --dark: #41aaa8;
+    --accent: #2c003e;
+}
+* {
+    box-sizing: border-box;
+}
+/* PHONE UP */
+body {
+    background: var(--main);
+    font-family: "Poppins", sans-serif;
+    font-weight: 300;
+    font-size: 20px;
+    color: var(--dark);
+    height: 100%;
+    position: relative;
+}
+main {
+    min-height: 100vh;
+    padding-bottom: 8em;
+    position: relative;
+}
+header {
+    width: 100vw;
+    padding: 1em 2em;
+    background: var(--accent);
+}
+#logo {
+    color: var(--main);
+    font-weight: 400;
+    font-size: 2em;
+}
+section {
+    margin: 0 auto;
+    width: 90vw;
+}
+#img-container {
+    display: flex;
+    flex-direction: column;
+}
+.card {
+    /* width: 15em; */
+    /* height: 15em; */
+    margin: 0.5em;
+    border: 1px solid var(--accent);
+    border-radius: 5px;
+    padding: 1em;
+    display: flex;
+    flex-direction: column;
+}
+img {
+    object-fit: cover;
+    width: 100%;
+    height: 80%;
+}
+a {
+    color: var(--accent);
+    text-decoration: none;
+}
+a:visited {
+    color: var(--accent);
+}
+a:hover {
+    text-decoration: underline;
+}
+footer {
+    position: absolute;
+    width: 100%;
+    height: 8em;
+    bottom: 0;
+    color: var(--dark);
+    font-size: 0.6em;
+    line-height: 1.6;
+    text-align: center;
+    padding: 2em 0;
+}
+/* PHONE ONLY @media (max-width: 599px) */
+@media only screen and (max-width: 599px) {
+}
+/* TABLET PORTRAIT @media (min-width: 600px) */
+@media only screen and (min-width: 600px) {
+    #img-container {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* TABLET LANDSCAPE @media (min-width: 900px) */
+@media only screen and (min-width: 900px) {
+}
+/* DESKTOP @media (min-width: 1200px) */
+
+@media only screen and (min-width: 1200px) {
+    section {
+        margin: 0 auto;
+        width: 80vw;
+    }
+    #img-container {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+    }
+    .card {
+        width: 15em;
+        height: 15em;
+        border: 1px solid var(--accent);
+        border-radius: 5px;
+        padding: 1em;
+    }
+}
