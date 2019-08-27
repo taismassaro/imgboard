@@ -10,7 +10,7 @@
 /* PHONE UP */
 body {
     background: var(--main);
-    font-family: "Poppins", sans-serif;
+    font-family: "Varela Round", sans-serif;
     font-weight: 300;
     font-size: 20px;
     color: var(--dark);
@@ -25,16 +25,51 @@ main {
 header {
     width: 100vw;
     padding: 1em 2em;
-    background: var(--accent);
+    /* background: var(--accent); */
 }
 #logo {
-    color: var(--main);
+    color: var(--accent);
     font-weight: 400;
     font-size: 2em;
 }
+#logo span {
+    font-weight: 900;
+}
+
 section {
     margin: 0 auto;
     width: 90vw;
+}
+input[type="file"] {
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    z-index: -1;
+}
+input[type="file"] + label {
+    font-size: 1em;
+    font-weight: 300;
+    color: var(--main);
+    background-color: var(--light);
+    display: inline-block;
+    cursor: pointer;
+    padding: 0.25em;
+    border-radius: 5px;
+    transition: all 0.5s;
+}
+input[type="file"]:focus + label,
+input[type="file"] + label:hover {
+    background-color: var(--dark);
+}
+input[type="file"]:focus + label {
+    outline: 1px dotted var(--accent);
+    outline: -webkit-focus-ring-color auto 5px;
+}
+
+input[type="file"] + label * {
+    pointer-events: none;
 }
 #img-container {
     display: flex;
@@ -44,16 +79,18 @@ section {
     /* width: 15em; */
     /* height: 15em; */
     margin: 0.5em;
-    border: 1px solid var(--accent);
+    /* border: 1px solid var(--accent); */
     border-radius: 5px;
-    padding: 1em;
+    padding: 0.2em;
     display: flex;
     flex-direction: column;
 }
 img {
     object-fit: cover;
     width: 100%;
-    height: 80%;
+    height: 100%;
+    border-radius: 5px;
+    box-shadow: 1px 1px 5px var(--light);
 }
 a {
     color: var(--accent);
@@ -104,8 +141,8 @@ footer {
     .card {
         width: 15em;
         height: 15em;
-        border: 1px solid var(--accent);
+        /* border: 1px solid var(--accent); */
         border-radius: 5px;
-        padding: 1em;
+        padding: 0.2em;
     }
 }

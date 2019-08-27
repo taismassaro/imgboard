@@ -1,34 +1,81 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-<head>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <!-- <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,700,900&display=swap" rel="stylesheet"> -->
-    <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,700|Varela+Round&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/css/normalize.css">
-    <link rel="stylesheet" href="/css/style.css">
-    <script src="https://kit.fontawesome.com/4647f9cbe3.js"></script>
-    <title>img_src - Image Board Single-Page Application</title>
-</head>
-<body>
-    <main>
-    <header>
-        <div id="logo"><strong>img</strong>_src</div>
-    </header>
-    <section>
-        <h1>Latest Images</h1>
-        <div id="img-container" v-if="images.length > 0">
-            <div class="card" v-for="img in images">
-                <img :src="img.url" :alt="img.title">
-                <p>{{img.title}}</p>
-            </div>
-    </div>
-</section>
-    <footer>A (not so safe) single-page application where anybody can go and upload an image of their choice.<br>Made with <span><i class="fas fa-heart"></i></span> and <a href="https://vuejs.org/" target="_blank">Vue.js</a> by
-        <a href="https://github.com/taismassaro" target="_blank">Taís Massaro</a><br>@ <a href="https://www.spiced-academy.com/program/full-stack-web-development/" target="_blank">SPICED Academy</a>, 2019.
-    </footer>
-</main>
-</body>
-<script src="/js/vue.js"></script>
-<script src="/js/axios.min.js"></script>
-<script src="/js/script.js" charset="utf-8"></script>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <!-- <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,700,900&display=swap" rel="stylesheet"> -->
+        <link
+            href="https://fonts.googleapis.com/css?family=Poppins:300,400,700|Varela+Round&display=swap"
+            rel="stylesheet"
+        />
+        <link rel="stylesheet" href="/css/normalize.css" />
+        <link rel="stylesheet" href="/css/style.css" />
+        <script src="https://kit.fontawesome.com/4647f9cbe3.js"></script>
+        <title>img_src - Image Board Single-Page Application</title>
+    </head>
+    <body>
+        <main>
+            <header>
+                <div id="logo"><span>img</span>_src</div>
+            </header>
+            <section>
+                <form autocomplete="off">
+                    <input
+                        v-model="title"
+                        type="text"
+                        name="title"
+                        placeholder="title"
+                    />
+                    <input
+                        v-model="description"
+                        type="text"
+                        name="description"
+                        placeholder="description"
+                    />
+                    <input
+                        v-model="username"
+                        type="text"
+                        name="username"
+                        placeholder="username"
+                    />
+
+                    <input
+                        @change="uploadFile"
+                        type="file"
+                        name="file"
+                        id="file"
+                        accept="image/*"
+                    />
+                    <label for="file"><i class="fas fa-plus"></i> {{uploaded}}</label>
+                    <button @click="submitInput">go</button>
+                </form>
+            </section>
+
+            <section>
+                <h1>Latest Images</h1>
+                <div id="img-container" v-if="images.length > 0">
+                    <div class="card" v-for="img in images" :key="img.url">
+                        <img :src="img.url" :alt="img.title" />
+                        <p>{{img.title}}</p>
+                    </div>
+                </div>
+            </section>
+            <footer>
+                A (not so safe) single-page application where anybody can go and
+                upload an image of their choice.<br />Made with
+                <span><i class="fas fa-heart"></i></span> and
+                <a href="https://vuejs.org/" target="_blank">Vue.js</a> by
+                <a href="https://github.com/taismassaro" target="_blank"
+                    >Taís Massaro</a
+                ><br />@
+                <a
+                    href="https://www.spiced-academy.com/program/full-stack-web-development/"
+                    target="_blank"
+                    >SPICED Academy</a
+                >, 2019.
+            </footer>
+        </main>
+    </body>
+    <script src="/js/vue.js"></script>
+    <script src="/js/axios.min.js"></script>
+    <script src="/js/script.js" charset="utf-8"></script>
 </html>
