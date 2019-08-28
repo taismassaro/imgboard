@@ -53,6 +53,12 @@
                         that.images.unshift(img);
                         that.uploaded = "";
                         console.log("Array of images:", that.images);
+                        that.form = {
+                            title: "",
+                            description: "",
+                            username: "",
+                            file: null
+                        };
                     })
                     .catch(function(error) {
                         console.log("Error in POST /upload", error);
@@ -86,7 +92,10 @@
         data: function() {
             return {
                 currentImg: "",
-                comments: {
+
+                comments: [],
+
+                form: {
                     username: "",
                     comment: ""
                 }
@@ -97,13 +106,15 @@
             // runs when the html is loaded
             console.log("Vue component is mounted.");
             console.log("Component's this:", this);
-            console.log("Current Image:", this.imgId);
+            // console.log("Current Image:", this.imgId);
             var that = this;
             axios
                 .get(`/modal/${this.imgId}`)
                 .then(function(dbData) {
                     console.log("Modal data:", dbData.data);
-                    that.currentImg = dbData.data;
+                    let { comments, image } = dbData.data;
+                    that.comments = comments;
+                    that.currentImg = image;
                 })
                 .catch(function(error) {
                     console.log("Error fetching modal data:", error);
@@ -111,11 +122,33 @@
         },
 
         methods: {
+            // event handlers (only runs when the user interacts with the page)
             hideModal: function() {
                 this.$emit("hide");
                 console.log("hideModal triggered");
+            },
+            sendComment: function(event) {
+                event.preventDefault();
+                console.log("Submit comment.");
+                console.log("this:", this);
+
+                var that = this;
+                axios
+                    .post(`/comments/${that.imgId}`, that.form)
+                    .then(function(res) {
+                        console.log("Response from POST /comments:", res);
+                        var comment = res.data;
+                        that.comments.unshift(comment);
+                        console.log("All comments:", that.comments);
+                        that.form = {
+                            username: "",
+                            comment: ""
+                        };
+                    })
+                    .catch(function(error) {
+                        console.log("Error in POST /comments", error);
+                    });
             }
-            // event handlers (only runs when the user interacts with the page)
         }
     });
 })();

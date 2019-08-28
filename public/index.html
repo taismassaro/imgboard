@@ -53,7 +53,6 @@
             </section>
 
             <section>
-                <h1>Latest Images</h1>
                 <div id="img-container" v-if="images.length > 0">
                     <div
                         class="card"
@@ -81,11 +80,38 @@
 
         <!-- VUE COMPONENT TEMPLATE -->
         <script id="modal-template" type="text/x-template">
-            <div @click="hideModal">
+            <div>
+                <p @click="hideModal">X</p>
                 <img :src="currentImg.url">
                 <h1>{{currentImg.title}}</h1>
                 <h2>{{currentImg.username}} {{currentImg.created_at}}</h2>
                 <p>{{currentImg.description}}</p>
+
+                    <form>
+                    <input
+                        v-model="form.username"
+                        type="text"
+                        name="username"
+                        placeholder="username" required
+                    />
+                    <label for="comment">Comment:</label>
+                    <textarea
+                        v-model="form.comment"
+                        id="text"
+                        name="comment"
+                        rows="4" cols="42"
+                    ></textarea>
+                    <button @click="sendComment">comment</button>
+                </form>
+
+                <div id="comments" v-if="comments.length > 0">
+                    <div
+                        v-for="comment in comments"
+                    >
+                        <p>{{comment.comment}}</p>
+                        <p>{{comment.username}} {{comment.date}}</p>
+                    </div>
+                </div>
 
             </div>
         </script>

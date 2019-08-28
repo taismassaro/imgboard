@@ -6,9 +6,11 @@ const db = spicedPg(`postgres:${user}:${pass}@localhost:5432/imgboard`);
 ///// REQUEST IMAGES /////
 
 exports.getImgs = () => {
-    return db.query(`SELECT * FROM images ORDER BY id DESC`).then(imgs => {
-        return imgs.rows;
-    });
+    return db
+        .query(`SELECT * FROM images ORDER BY id DESC LIMIT 6`)
+        .then(imgs => {
+            return imgs.rows;
+        });
 };
 
 exports.uploadImg = (url, username, title, description) => {
@@ -27,5 +29,27 @@ exports.currentImg = id => {
         .query(`SELECT * FROM images WHERE id = $1`, [id])
         .then(currentImg => {
             return currentImg.rows[0];
+        });
+};
+
+exports.getComments = imgId => {
+    return db
+        .query(`SELECT * FROM comments WHERE img_id = $1 ORDER BY date DESC`, [
+            imgId
+        ])
+        .then(comments => {
+            // console.log("Comments result:", comments);
+            return comments.rows;
+        });
+};
+
+exports.saveComment = (imgId, username, comment) => {
+    return db
+        .query(
+            `INSERT INTO comments (img_id, username, comment) VALUES ($1, $2, $3) RETURNING *`,
+            [imgId, username, comment]
+        )
+        .then(comments => {
+            return comments.rows[0];
         });
 };
