@@ -37,9 +37,17 @@ const uploader = multer({
 const s3 = require("./utils/s3");
 const config = require("./utils/config.json");
 
+///// MOMENT.JS TO FORMAT DATE /////
+
+const moment = require("moment");
+
 ///// SERVE FILES IN /public /////
 
 app.use(express.static("public"));
+
+///// SET req.body TO BE THE JSON SENT BY THE AXIOS REQUEST /////
+
+app.use(express.json());
 
 ///// ROUTES /////
 
@@ -58,6 +66,8 @@ app.get("/images", (req, res) => {
 app.post("/upload", uploader.single("file"), s3.upload, (req, res) => {
     // req.file === file that was just uploaded
     // req.body === values typed in the input fields
+    console.log("req.file:", req.file);
+    console.log("req.body:", req.body);
 
     const { filename } = req.file;
     const url = config.s3Url + filename;
@@ -71,6 +81,22 @@ app.post("/upload", uploader.single("file"), s3.upload, (req, res) => {
         })
         .catch(error => {
             console.log("Error in uploadImg query:", error);
+        });
+});
+
+app.get("/modal/:id", (req, res) => {
+    console.log("GET request to /modal");
+    console.log("req in /modal", req.params);
+    let id = req.params.id;
+    db.currentImg(id)
+        .then(currentImg => {
+            console.log("Current img:", currentImg);
+            let date = moment(currentImg.created_at).fromNow();
+            currentImg.created_at = date;
+            res.json(currentImg);
+        })
+        .catch(error => {
+            console.log("Error in currentImg query:", error);
         });
 });
 

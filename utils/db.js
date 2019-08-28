@@ -6,13 +6,9 @@ const db = spicedPg(`postgres:${user}:${pass}@localhost:5432/imgboard`);
 ///// REQUEST IMAGES /////
 
 exports.getImgs = () => {
-    return db
-        .query(
-            `SELECT url, username, title, description FROM images ORDER BY id DESC`
-        )
-        .then(imgs => {
-            return imgs.rows;
-        });
+    return db.query(`SELECT * FROM images ORDER BY id DESC`).then(imgs => {
+        return imgs.rows;
+    });
 };
 
 exports.uploadImg = (url, username, title, description) => {
@@ -23,5 +19,13 @@ exports.uploadImg = (url, username, title, description) => {
         )
         .then(data => {
             return data.rows[0];
+        });
+};
+
+exports.currentImg = id => {
+    return db
+        .query(`SELECT * FROM images WHERE id = $1`, [id])
+        .then(currentImg => {
+            return currentImg.rows[0];
         });
 };
