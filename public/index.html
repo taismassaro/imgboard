@@ -13,26 +13,26 @@
         <title>img_src - Image Board Single-Page Application</title>
     </head>
     <body>
+        <header>
+            <div id="logo"><span>img</span>_src</div>
+        </header>
         <main>
-            <header>
-                <div id="logo"><span>img</span>_src</div>
-            </header>
             <section>
                 <form autocomplete="off">
                     <input
-                        v-model="title"
+                        v-model="form.title"
                         type="text"
                         name="title"
                         placeholder="title"
                     />
                     <input
-                        v-model="description"
+                        v-model="form.description"
                         type="text"
                         name="description"
                         placeholder="description"
                     />
                     <input
-                        v-model="username"
+                        v-model="form.username"
                         type="text"
                         name="username"
                         placeholder="username"
@@ -45,35 +45,92 @@
                         id="file"
                         accept="image/*"
                     />
-                    <label for="file"><i class="fas fa-plus"></i> {{uploaded}}</label>
+                    <label for="file"
+                        ><i class="fas fa-plus"></i> {{uploaded}}</label
+                    >
                     <button @click="submitInput">go</button>
                 </form>
             </section>
 
             <section>
-                <h1>Latest Images</h1>
                 <div id="img-container" v-if="images.length > 0">
-                    <div class="card" v-for="img in images" :key="img.url">
+                    <div
+                        class="card"
+                        v-for="img in images"
+                        :key="img.url"
+                        @click="toggleModal(img.id)"
+                    >
                         <img :src="img.url" :alt="img.title" />
                         <p>{{img.title}}</p>
                     </div>
                 </div>
             </section>
-            <footer>
-                A (not so safe) single-page application where anybody can go and
-                upload an image of their choice.<br />Made with
-                <span><i class="fas fa-heart"></i></span> and
-                <a href="https://vuejs.org/" target="_blank">Vue.js</a> by
-                <a href="https://github.com/taismassaro" target="_blank"
-                    >Taís Massaro</a
-                ><br />@
-                <a
-                    href="https://www.spiced-academy.com/program/full-stack-web-development/"
-                    target="_blank"
-                    >SPICED Academy</a
-                >, 2019.
-            </footer>
+
+            <!-- VUE COMPONENT -->
+            <img-modal
+                v-if="showModal"
+                :img-id="imgId"
+                :show-modal="showModal"
+                @hide="toggleModal"
+            >
+            </img-modal>
+            <!-- VUE COMPONENT -->
+
         </main>
+
+        <!-- VUE COMPONENT TEMPLATE -->
+        <script id="modal-template" type="text/x-template">
+            <div>
+                <p @click="hideModal">X</p>
+                <img :src="currentImg.url">
+                <h1>{{currentImg.title}}</h1>
+                <h2>{{currentImg.username}} {{currentImg.created_at}}</h2>
+                <p>{{currentImg.description}}</p>
+
+                    <form>
+                    <input
+                        v-model="form.username"
+                        type="text"
+                        name="username"
+                        placeholder="username" required
+                    />
+                    <label for="comment">Comment:</label>
+                    <textarea
+                        v-model="form.comment"
+                        id="text"
+                        name="comment"
+                        rows="4" cols="42"
+                    ></textarea>
+                    <button @click="sendComment">comment</button>
+                </form>
+
+                <div id="comments" v-if="comments.length > 0">
+                    <div
+                        v-for="comment in comments"
+                    >
+                        <p>{{comment.comment}}</p>
+                        <p>{{comment.username}} {{comment.date}}</p>
+                    </div>
+                </div>
+
+            </div>
+        </script>
+        <!-- VUE COMPONENT TEMPLATE -->
+
+        <footer>
+            A (not so safe) single-page application where anybody can go and
+            upload an image of their choice.<br />Made with
+            <span><i class="fas fa-heart"></i></span> and
+            <a href="https://vuejs.org/" target="_blank">Vue.js</a> by
+            <a href="https://github.com/taismassaro" target="_blank"
+                >Taís Massaro</a
+            ><br />@
+            <a
+                href="https://www.spiced-academy.com/program/full-stack-web-development/"
+                target="_blank"
+                >SPICED Academy</a
+            >, 2019.
+        </footer>
     </body>
     <script src="/js/vue.js"></script>
     <script src="/js/axios.min.js"></script>

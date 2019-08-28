@@ -37,17 +37,25 @@ const uploader = multer({
 const s3 = require("./utils/s3");
 const config = require("./utils/config.json");
 
+///// MOMENT.JS TO FORMAT DATE /////
+
+const moment = require("moment");
+
 ///// SERVE FILES IN /public /////
 
 app.use(express.static("public"));
 
-///// ROUTES /////
+///// SET req.body TO BE THE JSON SENT BY THE AXIOS REQUEST /////
+
+app.use(express.json());
+
+///// GET ALL IMAGES /////
 
 app.get("/images", (req, res) => {
     console.log("GET request to /images");
     db.getImgs()
         .then(imgs => {
-            console.log("Imgs", imgs);
+            // console.log("Imgs", imgs);
             res.json(imgs);
         })
         .catch(error => {
@@ -55,9 +63,13 @@ app.get("/images", (req, res) => {
         });
 });
 
+///// UPLOAD IMAGE /////
+
 app.post("/upload", uploader.single("file"), s3.upload, (req, res) => {
     // req.file === file that was just uploaded
     // req.body === values typed in the input fields
+    console.log("req.file:", req.file);
+    console.log("req.body:", req.body);
 
     const { filename } = req.file;
     const url = config.s3Url + filename;
@@ -73,6 +85,65 @@ app.post("/upload", uploader.single("file"), s3.upload, (req, res) => {
             console.log("Error in uploadImg query:", error);
         });
 });
+
+///// LOAD MODAL /////
+
+app.get("/modal/:id", (req, res) => {
+    console.log("GET request to /modal");
+    console.log("req in /modal", req.params);
+    let id = req.params.id;
+    db.currentImg(id)
+        .then(currentImg => {
+            console.log("Current img:", currentImg);
+            db.getComments(currentImg.id)
+                .then(comments => {
+                    let imgDate = moment(currentImg.created_at).fromNow();
+                    currentImg.created_at = imgDate;
+                    comments.forEach(comment => {
+                        let commentDate = moment(comment.date).fromNow();
+                        comment.date = commentDate;
+                    });
+                    console.log("Comments", comments);
+
+                    let data = {
+                        image: currentImg,
+                        comments: comments
+                    };
+                    res.json(data);
+                })
+                .catch(error => {
+                    console.log("Error in getComments query:", error);
+                });
+        })
+        .catch(error => {
+            console.log("Error in currentImg query:", error);
+        });
+});
+
+///// POST COMMENT /////
+
+app.post("/comments/:id", (req, res) => {
+    console.log("POST comments");
+    console.log("req.body:", req.body);
+
+    let imgId = req.params.id;
+    console.log("req in /comments", req.params);
+
+    const { username, comment } = req.body;
+
+    db.saveComment(imgId, username, comment)
+        .then(comment => {
+            console.log("Returned values from saveComment query:", comment);
+            let date = moment(comment.date).fromNow();
+            comment.date = date;
+            res.json(comment);
+        })
+        .catch(error => {
+            console.log("Error in saveComment query:", error);
+        });
+});
+
+///// SERVER IS RUNNING /////
 
 app.listen(8080, () => {
     console.log("Port 8080: Express listening.");

@@ -1,0 +1,8 @@
+DROP TABLE IF EXISTS comments;
+
+CREATE TABLE comments(
+    img_id INTEGER NOT NULL REFERENCES images(id),
+    username VARCHAR(255) NOT NULL,
+    comment VARCHAR(255) NOT NULL,
+    date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

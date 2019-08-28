@@ -1,27 +1,35 @@
 ///// FRONT END - VUE.JS /////
 
 (function() {
+    ///// MAIN VUE INSTANCE /////
     new Vue({
         el: "main",
         data: {
+            showModal: false,
+            imgId: "",
+
             images: [],
-            title: "",
-            description: "",
-            username: "",
-            file: null,
+
+            form: {
+                title: "",
+                description: "",
+                username: "",
+                file: null
+            },
+
             uploaded: ""
         },
         mounted: function() {
             // must be a normal function so we can still have access to "this"
             console.log("Vue is mounted.");
-            var up = this;
+            var that = this;
             axios
                 .get("/images")
-                .then(function(response) {
-                    up.images = response.data;
+                .then(function(dbImages) {
+                    that.images = dbImages.data;
                 })
                 .catch(function(error) {
-                    console.log("Error:", error);
+                    console.log("Error fetching images:", error);
                 });
         },
         methods: {
@@ -31,10 +39,10 @@
                 console.log("this:", this);
 
                 var formData = new FormData();
-                formData.append("title", this.title);
-                formData.append("description", this.description);
-                formData.append("username", this.username);
-                formData.append("file", this.file);
+                formData.append("title", this.form.title);
+                formData.append("description", this.form.description);
+                formData.append("username", this.form.username);
+                formData.append("file", this.form.file);
 
                 var that = this;
                 axios
@@ -45,6 +53,12 @@
                         that.images.unshift(img);
                         that.uploaded = "";
                         console.log("Array of images:", that.images);
+                        that.form = {
+                            title: "",
+                            description: "",
+                            username: "",
+                            file: null
+                        };
                     })
                     .catch(function(error) {
                         console.log("Error in POST /upload", error);
@@ -53,22 +67,88 @@
             uploadFile: function(event) {
                 console.log("Upload file event.");
                 console.log("File:", event.target.files[0]);
-                this.file = event.target.files[0];
+                this.form.file = event.target.files[0];
                 this.uploaded = event.target.files[0].name;
+            },
+            toggleModal: function(imgId) {
+                if (this.showModal === false) {
+                    this.imgId = imgId;
+                    console.log("Current Image:", imgId);
+                    this.showModal = true;
+                } else {
+                    this.showModal = false;
+                }
             }
         }
     });
 
-    var fileInput = document.querySelector("input[name='file']"),
-        label = fileInput.nextElementSibling,
-        val = label.innerHTML;
+    ///// VUE COMPONENT /////
 
-    console.log("fileInput:", fileInput);
-    console.log("label:", label);
-    console.log("val:", val);
+    Vue.component("img-modal", {
+        // data, methods, mounted
+        template: "#modal-template",
+        props: ["imgId", "showModal"],
 
-    fileInput.addEventListener("change", function(event) {
-        console.log("input event:", event);
-        // var filename = event.target.value;
+        data: function() {
+            return {
+                currentImg: "",
+
+                comments: [],
+
+                form: {
+                    username: "",
+                    comment: ""
+                }
+            };
+        },
+
+        mounted: function() {
+            // runs when the html is loaded
+            console.log("Vue component is mounted.");
+            console.log("Component's this:", this);
+            // console.log("Current Image:", this.imgId);
+            var that = this;
+            axios
+                .get(`/modal/${this.imgId}`)
+                .then(function(dbData) {
+                    console.log("Modal data:", dbData.data);
+                    let { comments, image } = dbData.data;
+                    that.comments = comments;
+                    that.currentImg = image;
+                })
+                .catch(function(error) {
+                    console.log("Error fetching modal data:", error);
+                });
+        },
+
+        methods: {
+            // event handlers (only runs when the user interacts with the page)
+            hideModal: function() {
+                this.$emit("hide");
+                console.log("hideModal triggered");
+            },
+            sendComment: function(event) {
+                event.preventDefault();
+                console.log("Submit comment.");
+                console.log("this:", this);
+
+                var that = this;
+                axios
+                    .post(`/comments/${that.imgId}`, that.form)
+                    .then(function(res) {
+                        console.log("Response from POST /comments:", res);
+                        var comment = res.data;
+                        that.comments.unshift(comment);
+                        console.log("All comments:", that.comments);
+                        that.form = {
+                            username: "",
+                            comment: ""
+                        };
+                    })
+                    .catch(function(error) {
+                        console.log("Error in POST /comments", error);
+                    });
+            }
+        }
     });
 })();

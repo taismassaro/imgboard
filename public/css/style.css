@@ -84,6 +84,7 @@ input[type="file"] + label * {
     padding: 0.2em;
     display: flex;
     flex-direction: column;
+    cursor: pointer;
 }
 img {
     object-fit: cover;
