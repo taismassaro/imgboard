@@ -10,7 +10,7 @@
 /* PHONE UP */
 body {
     background: var(--main);
-    font-family: "Varela Round", sans-serif;
+    font-family: "Poppins", sans-serif;
     font-weight: 300;
     font-size: 20px;
     color: var(--dark);
@@ -92,6 +92,44 @@ img {
     height: 100%;
     border-radius: 5px;
     box-shadow: 1px 1px 5px var(--light);
+}
+.overlay {
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.75);
+    z-index: 10;
+    overflow: scroll;
+}
+#modal {
+    width: 60%;
+    margin: 1em auto;
+    box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.75);
+    background: var(--main);
+    padding: 1em;
+    border-radius: 5px;
+}
+#modal-img {
+    border-bottom: 1px solid var(--accent);
+    margin-bottom: 1em;
+}
+.modal-title {
+    font-weight: 700;
+    font-size: 1.5em;
+}
+.modal-author {
+    font-size: 0.8em;
+}
+.modal-author span {
+    opacity: 0.6;
+}
+.modal-comment {
+    color: var(--accent);
+}
+#comment {
+    display: block;
 }
 a {
     color: var(--accent);
