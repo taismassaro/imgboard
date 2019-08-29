@@ -58,8 +58,8 @@
                         class="card"
                         v-for="img in images"
                         :key="img.url"
-                        @click="toggleModal(img.id)"
                     >
+                    <a :href="'#' + img.id">OPEN</a>
                         <img :src="img.url" :alt="img.title" />
                         <p>{{img.title}}</p>
                     </div>
@@ -71,7 +71,7 @@
                 v-if="showModal"
                 :img-id="imgId"
                 :show-modal="showModal"
-                @hide="toggleModal"
+                @hide="hideModal"
             >
             </img-modal>
             <!-- VUE COMPONENT -->

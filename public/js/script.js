@@ -6,7 +6,7 @@
         el: "main",
         data: {
             showModal: false,
-            imgId: "",
+            imgId: location.hash.slice(1),
 
             images: [],
 
@@ -24,6 +24,7 @@
             // must be a normal function so we can still have access to "this"
             console.log("Vue is mounted.");
             var that = this;
+
             axios
                 .get("/images")
                 .then(function(dbImages) {
@@ -35,6 +36,19 @@
                 .catch(function(error) {
                     console.log("Error fetching images:", error);
                 });
+
+            addEventListener("hashchange", function() {
+                var hashId = parseInt(location.hash.slice(1));
+
+                console.log("hashId:", typeof hashId);
+                console.log("isNaN:", isNaN(hashId));
+
+                if (typeof hashId === "number" && isNaN(hashId) === false) {
+                    console.log("SHOW MODAL");
+                    that.imgId = location.hash.slice(1);
+                    that.showModal = true;
+                }
+            });
 
             this.scroll();
         },
@@ -76,13 +90,10 @@
                 this.form.file = event.target.files[0];
                 this.uploaded = event.target.files[0].name;
             },
-            toggleModal: function(imgId) {
-                if (this.showModal === false) {
-                    this.imgId = imgId;
-                    console.log("Current Image:", imgId);
-                    this.showModal = true;
-                } else {
+            hideModal: function() {
+                if (this.showModal === true) {
                     this.showModal = false;
+                    location.hash = "";
                 }
             },
             scroll: function() {
@@ -127,15 +138,6 @@
                         }
                     }
                 }, 500);
-
-                console.log("bottom:", bottom());
-
-                // setInterval(function() {
-                //     if (scrolling) {
-                //         // scrolling = false;
-                //
-                //     }
-                // }, 250);
             }
         }
     });
@@ -177,6 +179,14 @@
                 .catch(function(error) {
                     console.log("Error fetching modal data:", error);
                 });
+        },
+
+        watch: {
+            // watches for changes in the instance props
+            imgId: function() {
+                // do the same thing as in mounted (request the data and show them in the modal)
+                console.log("imgId changed in the instance:", this.imgId);
+            }
         },
 
         methods: {
