@@ -75,44 +75,47 @@
             >
             </img-modal>
             <!-- VUE COMPONENT -->
-
         </main>
 
         <!-- VUE COMPONENT TEMPLATE -->
         <script id="modal-template" type="text/x-template">
-            <div>
-                <p @click="hideModal">X</p>
-                <img :src="currentImg.url">
-                <h1>{{currentImg.title}}</h1>
-                <h2>{{currentImg.username}} {{currentImg.created_at}}</h2>
-                <p>{{currentImg.description}}</p>
-
+            <div class="overlay" @click="hideModal">
+                <div id="modal" @click.stop>
+                    <div id="modal-img">
+                    <p @click="hideModal">X</p>
+                    <img :src="currentImg.url">
+                    <h1 class="modal-title">{{currentImg.title}}</h1>
+                    <p class="modal-author">by <strong>{{currentImg.username}}</strong> <span>{{currentImg.created_at}}</span></p>
+                    <p class="modal-description">{{currentImg.description}}</p>
+                </div>
+                <div id="modal-comments">
                     <form>
-                    <input
-                        v-model="form.username"
-                        type="text"
-                        name="username"
-                        placeholder="username" required
-                    />
-                    <label for="comment">Comment:</label>
-                    <textarea
-                        v-model="form.comment"
-                        id="text"
-                        name="comment"
-                        rows="4" cols="42"
-                    ></textarea>
-                    <button @click="sendComment">comment</button>
-                </form>
+                        <input
+                            v-model="form.username"
+                            type="text"
+                            name="username"
+                            placeholder="username" required
+                        />
+                        <!-- <label for="comment">Comment:</label> -->
+                        <textarea
+                            v-model="form.comment"
+                            id="comment"
+                            name="comment"
+                            rows="4" cols="42"
+                        >Comment away!</textarea>
+                        <button @click="sendComment">comment</button>
+                    </form>
 
-                <div id="comments" v-if="comments.length > 0">
-                    <div
-                        v-for="comment in comments"
-                    >
-                        <p>{{comment.comment}}</p>
-                        <p>{{comment.username}} {{comment.date}}</p>
+                    <div id="comments" v-if="comments.length > 0">
+                        <div
+                            v-for="comment in comments"
+                        >
+                            <p class="modal-comment">{{comment.comment}}</p>
+                            <p class="modal-author"><strong>{{comment.username}}</strong> <span>{{comment.date}}</span></p>
+                        </div>
                     </div>
                 </div>
-
+                </div>
             </div>
         </script>
         <!-- VUE COMPONENT TEMPLATE -->
