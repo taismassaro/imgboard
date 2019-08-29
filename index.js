@@ -49,14 +49,28 @@ app.use(express.static("public"));
 
 app.use(express.json());
 
-///// GET ALL IMAGES /////
+///// GET FIRST IMAGES /////
 
 app.get("/images", (req, res) => {
     console.log("GET request to /images");
+    db.getImgs()
+        .then(imgs => {
+            // console.log("Imgs", imgs);
+            res.json(imgs);
+        })
+        .catch(error => {
+            console.log("Error in getImgs query:", error);
+        });
+});
+
+///// INFINITE SCROLL IMAGES /////
+
+app.get("/images/:lastId", (req, res) => {
+    console.log("GET request to /images/lastId");
     console.log("req in /images", req.params);
 
-    // let lastId = req.params.lastId;
-    db.getImgs()
+    let lastId = req.params.lastId;
+    db.getImgs(lastId)
         .then(imgs => {
             console.log("Imgs", imgs);
             res.json(imgs);
