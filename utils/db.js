@@ -5,9 +5,24 @@ const db = spicedPg(`postgres:${user}:${pass}@localhost:5432/imgboard`);
 
 ///// REQUEST IMAGES /////
 
-exports.getImgs = () => {
+exports.getImgs = id => {
+    let idCheck = "";
+    if (id) {
+        idCheck = `WHERE id < $1`;
+    }
     return db
-        .query(`SELECT * FROM images ORDER BY id DESC LIMIT 6`)
+        .query(
+            `SELECT *, (
+            SELECT id
+            FROM images
+            ORDER BY id ASC
+            LIMIT 1
+        ) as "lowestId"
+        FROM images
+        ${idCheck}
+        ORDER BY id DESC LIMIT 9`,
+            id && [id]
+        )
         .then(imgs => {
             return imgs.rows;
         });

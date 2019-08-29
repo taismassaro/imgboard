@@ -17,7 +17,8 @@
                 file: null
             },
 
-            uploaded: ""
+            uploaded: "",
+            lastId: ""
         },
         mounted: function() {
             // must be a normal function so we can still have access to "this"
@@ -27,10 +28,15 @@
                 .get("/images")
                 .then(function(dbImages) {
                     that.images = dbImages.data;
+                    var lastIndex = that.images.length - 1;
+                    that.lastId = that.images[lastIndex].id;
+                    console.log("lastId", that.lastId);
                 })
                 .catch(function(error) {
                     console.log("Error fetching images:", error);
                 });
+
+            this.scroll();
         },
         methods: {
             submitInput: function(event) {
@@ -78,6 +84,58 @@
                 } else {
                     this.showModal = false;
                 }
+            },
+            scroll: function() {
+                var scrolling = false;
+                var bottom = function() {
+                    return (
+                        document.documentElement.scrollTop +
+                            window.innerHeight ===
+                        document.documentElement.offsetHeight
+                    );
+                };
+                window.onscroll = function() {
+                    scrolling = true;
+                };
+                var that = this;
+
+                setInterval(function() {
+                    if (scrolling) {
+                        scrolling = false;
+                        if (bottom()) {
+                            console.log("that in scroll():", that);
+                            axios
+                                .get(`/images/${that.lastId}`)
+                                .then(function(dbImages) {
+                                    console.log(
+                                        "dbImages in scroll:",
+                                        dbImages
+                                    );
+                                    dbImages.data.forEach(function(image) {
+                                        that.images.push(image);
+                                    });
+                                    var lastIndex = that.images.length - 1;
+                                    that.lastId = that.images[lastIndex].id;
+                                    console.log("lastId", that.lastId);
+                                })
+                                .catch(function(error) {
+                                    console.log(
+                                        "Error fetching images:",
+                                        error
+                                    );
+                                });
+                        }
+                    }
+                }, 500);
+
+                console.log("bottom:", bottom());
+
+                // setInterval(function() {
+                //     if (scrolling) {
+                //         // scrolling = false;
+                //
+                //     }
+                // }, 250);
             }
         }
     });
