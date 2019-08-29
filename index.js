@@ -53,9 +53,12 @@ app.use(express.json());
 
 app.get("/images", (req, res) => {
     console.log("GET request to /images");
+    console.log("req in /images", req.params);
+
+    // let lastId = req.params.lastId;
     db.getImgs()
         .then(imgs => {
-            // console.log("Imgs", imgs);
+            console.log("Imgs", imgs);
             res.json(imgs);
         })
         .catch(error => {

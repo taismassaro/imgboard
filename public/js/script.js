@@ -1,6 +1,9 @@
 ///// FRONT END - VUE.JS /////
 
 (function() {
+    var lastId = "";
+    var lastIndex = "";
+
     ///// MAIN VUE INSTANCE /////
     new Vue({
         el: "main",
@@ -24,13 +27,17 @@
             console.log("Vue is mounted.");
             var that = this;
             axios
-                .get("/images")
+                .get(`/images`)
                 .then(function(dbImages) {
                     that.images = dbImages.data;
+                    lastIndex = that.images.length - 1;
+                    lastId = that.images[lastIndex].id;
+                    console.log("lastId", lastId);
                 })
                 .catch(function(error) {
                     console.log("Error fetching images:", error);
                 });
+            this.scroll();
         },
         methods: {
             submitInput: function(event) {
@@ -78,6 +85,35 @@
                 } else {
                     this.showModal = false;
                 }
+            },
+            scroll: function() {
+                window.onscroll = () => {
+                    var bottom =
+                        document.documentElement.scrollTop +
+                            window.innerHeight ===
+                        document.documentElement.offsetHeight;
+
+                    if (bottom) {
+                        console.log("Bottom of the page:", bottom);
+                        var that = this;
+                        console.log("that in scroll():", that);
+                        axios
+                            .get("/images")
+                            .then(function(dbImages) {
+                                console.log("dbImages in scroll:", dbImages);
+                                dbImages.data.forEach(image => {
+                                    that.images.push(image);
+                                });
+                                // that.images.push(image);dbImages.data);
+                                lastIndex = that.images.length - 1;
+                                lastId = that.images[lastIndex].id;
+                                console.log("lastId", lastId);
+                            })
+                            .catch(function(error) {
+                                console.log("Error fetching images:", error);
+                            });
+                    }
+                };
             }
         }
     });
