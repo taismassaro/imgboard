@@ -112,6 +112,9 @@ app.get("/modal/:id", (req, res) => {
     db.currentImg(id)
         .then(currentImg => {
             console.log("Current img:", currentImg);
+            if (!currentImg) {
+                console.log("No matching data.");
+            }
             db.getComments(currentImg.id)
                 .then(comments => {
                     let imgDate = moment(currentImg.created_at).fromNow();
@@ -134,6 +137,7 @@ app.get("/modal/:id", (req, res) => {
         })
         .catch(error => {
             console.log("Error in currentImg query:", error);
+            res.json(false);
         });
 });
 

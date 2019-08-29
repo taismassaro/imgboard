@@ -80,7 +80,13 @@
         <!-- VUE COMPONENT TEMPLATE -->
         <script id="modal-template" type="text/x-template">
             <div class="overlay" @click="hideModal">
-                <div id="modal" @click.stop>
+                <template v-if="error === 'no image'">
+                    <div class="modal">
+                    <p>Oops, this image doesn't exist.</p>
+                </div>
+                </template>
+                <div class="modal" @click.stop v-else>
+
                     <div id="modal-img">
                     <p @click="hideModal">X</p>
                     <img :src="currentImg.url">

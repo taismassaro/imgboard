@@ -40,13 +40,13 @@
             addEventListener("hashchange", function() {
                 var hashId = parseInt(location.hash.slice(1));
 
-                console.log("hashId:", typeof hashId);
-                console.log("isNaN:", isNaN(hashId));
-
                 if (typeof hashId === "number" && isNaN(hashId) === false) {
                     console.log("SHOW MODAL");
                     that.imgId = location.hash.slice(1);
                     that.showModal = true;
+                } else {
+                    location.hash = "";
+                    history.pushState({}, "", "/");
                 }
             });
 
@@ -94,6 +94,7 @@
                 if (this.showModal === true) {
                     this.showModal = false;
                     location.hash = "";
+                    history.pushState({}, "", "/");
                 }
             },
             scroll: function() {
@@ -158,39 +159,47 @@
                 form: {
                     username: "",
                     comment: ""
-                }
+                },
+
+                error: ""
             };
         },
 
         mounted: function() {
-            // runs when the html is loaded
             console.log("Vue component is mounted.");
             console.log("Component's this:", this);
             // console.log("Current Image:", this.imgId);
-            var that = this;
-            axios
-                .get(`/modal/${this.imgId}`)
-                .then(function(dbData) {
-                    console.log("Modal data:", dbData.data);
-                    let { comments, image } = dbData.data;
-                    that.comments = comments;
-                    that.currentImg = image;
-                })
-                .catch(function(error) {
-                    console.log("Error fetching modal data:", error);
-                });
+            this.loadData();
         },
 
         watch: {
             // watches for changes in the instance props
             imgId: function() {
-                // do the same thing as in mounted (request the data and show them in the modal)
-                console.log("imgId changed in the instance:", this.imgId);
+                this.loadData();
             }
         },
 
         methods: {
-            // event handlers (only runs when the user interacts with the page)
+            loadData: function() {
+                var that = this;
+                axios
+                    .get(`/modal/${that.imgId}`)
+                    .then(function(dbData) {
+                        console.log("dbData", dbData);
+                        if (dbData.data === false) {
+                            that.error = "no image";
+                            // that.$emit("hide");
+                        } else {
+                            let { comments, image } = dbData.data;
+                            that.comments = comments;
+                            that.currentImg = image;
+                            that.error = "";
+                        }
+                    })
+                    .catch(function(error) {
+                        console.log("Error fetching modal data:", error);
+                    });
+            },
             hideModal: function() {
                 this.$emit("hide");
                 console.log("hideModal triggered");
