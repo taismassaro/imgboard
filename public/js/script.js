@@ -204,6 +204,12 @@
                 this.$emit("hide");
                 console.log("hideModal triggered");
             },
+            showPrev: function() {
+                location.hash = `#${this.currentImg.prevId}`;
+            },
+            showNext: function() {
+                location.hash = `#${this.currentImg.nextId}`;
+            },
             sendComment: function(event) {
                 event.preventDefault();
                 console.log("Submit comment.");
