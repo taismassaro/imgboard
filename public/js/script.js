@@ -191,21 +191,23 @@
                 console.log("this:", this);
 
                 var that = this;
-                axios
-                    .post(`/comments/${that.imgId}`, that.form)
-                    .then(function(res) {
-                        console.log("Response from POST /comments:", res);
-                        var comment = res.data;
-                        that.comments.unshift(comment);
-                        console.log("All comments:", that.comments);
-                        that.form = {
-                            username: "",
-                            comment: ""
-                        };
-                    })
-                    .catch(function(error) {
-                        console.log("Error in POST /comments", error);
-                    });
+                if (that.form.comment) {
+                    axios
+                        .post(`/comments/${that.imgId}`, that.form)
+                        .then(function(res) {
+                            console.log("Response from POST /comments:", res);
+                            var comment = res.data;
+                            that.comments.unshift(comment);
+                            console.log("All comments:", that.comments);
+                            that.form = {
+                                username: "",
+                                comment: ""
+                            };
+                        })
+                        .catch(function(error) {
+                            console.log("Error in POST /comments", error);
+                        });
+                }
             }
         }
     });
