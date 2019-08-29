@@ -12,12 +12,7 @@ exports.getImgs = id => {
     }
     return db
         .query(
-            `SELECT *, (
-            SELECT id
-            FROM images
-            ORDER BY id ASC
-            LIMIT 1
-        ) as "lowestId"
+            `SELECT *
         FROM images
         ${idCheck}
         ORDER BY id DESC LIMIT 9`,
@@ -41,7 +36,20 @@ exports.uploadImg = (url, username, title, description) => {
 
 exports.currentImg = id => {
     return db
-        .query(`SELECT * FROM images WHERE id = $1`, [id])
+        .query(
+            `SELECT *,
+            (SELECT id FROM images
+                WHERE id > $1
+                ORDER BY id ASC
+                LIMIT 1) AS "nextId",
+            (SELECT id FROM images
+                WHERE id < $1
+                ORDER BY id DESC
+                LIMIT 1) AS "prevId"
+            FROM images
+            WHERE id = $1`,
+            [id]
+        )
         .then(currentImg => {
             return currentImg.rows[0];
         });
