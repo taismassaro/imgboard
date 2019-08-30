@@ -91,11 +91,10 @@ app.post("/upload", uploader.single("file"), s3.upload, (req, res) => {
     const { filename } = req.file;
     const url = config.s3Url + filename;
     const { username, title, description } = req.body;
-    const tags = req.body.tags.split(',');
+    const tags = req.body.tags.split(",");
 
     console.log("tags in index.js:", typeof tags);
     console.log("tags in index.js:", Array.isArray(tags));
-
 
     db.uploadImg(url, username, title, description, tags)
         .then(data => {
@@ -119,25 +118,35 @@ app.get("/modal/:id", (req, res) => {
             if (!currentImg) {
                 console.log("No matching data.");
             }
-            db.getComments(currentImg.id)
-                .then(comments => {
-                    let imgDate = moment(currentImg.created_at).fromNow();
-                    currentImg.created_at = imgDate;
-                    comments.forEach(comment => {
-                        let commentDate = moment(comment.date).fromNow();
-                        comment.date = commentDate;
-                    });
-                    console.log("Comments", comments);
-
-                    let data = {
-                        image: currentImg,
-                        comments: comments
-                    };
-                    res.json(data);
-                })
-                .catch(error => {
-                    console.log("Error in getComments query:", error);
+            db.getTags(currentImg.id).then(tags => {
+                console.log("current image tags:", tags);
+                let imgTags = [];
+                tags.forEach(item => {
+                    imgTags.push(item.tag);
                 });
+                console.log("imgTags", imgTags);
+
+                db.getComments(currentImg.id)
+                    .then(comments => {
+                        let imgDate = moment(currentImg.created_at).fromNow();
+                        currentImg.created_at = imgDate;
+                        comments.forEach(comment => {
+                            let commentDate = moment(comment.date).fromNow();
+                            comment.date = commentDate;
+                        });
+                        console.log("Comments", comments);
+
+                        let data = {
+                            image: currentImg,
+                            tags: imgTags,
+                            comments: comments
+                        };
+                        res.json(data);
+                    })
+                    .catch(error => {
+                        console.log("Error in getComments query:", error);
+                    });
+            });
         })
         .catch(error => {
             console.log("Error in currentImg query:", error);

@@ -58,7 +58,10 @@
                 console.log("Clicked submit button.");
                 console.log("this:", this);
                 console.log("tags:", this.form.tags);
-                console.log("split tags in script.js:", Array.isArray(this.form.tags.split(",")));
+                console.log(
+                    "split tags in script.js:",
+                    Array.isArray(this.form.tags.split(","))
+                );
 
                 var formData = new FormData();
                 formData.append("title", this.form.title);
@@ -159,6 +162,8 @@
 
                 comments: [],
 
+                tags: [],
+
                 form: {
                     username: "",
                     comment: ""
@@ -179,8 +184,8 @@
             // watches for changes in the instance props
             imgId: function() {
                 if (this.imgId !== this.currentImg.id) {
-                this.loadData();
-            }
+                    this.loadData();
+                }
             }
         },
 
@@ -195,7 +200,8 @@
                             that.error = "no image";
                             // that.$emit("hide");
                         } else {
-                            let { comments, image } = dbData.data;
+                            let { comments, image, tags } = dbData.data;
+                            that.tags = tags;
                             that.comments = comments;
                             that.currentImg = image;
                             that.error = "";
@@ -210,10 +216,10 @@
                 console.log("hideModal triggered");
             },
             showPrev: function() {
-                location.hash = `#${this.currentImg.prevId}`;
+                location.hash = "#" + this.currentImg.prevId;
             },
             showNext: function() {
-                location.hash = `#${this.currentImg.nextId}`;
+                location.hash = "#" + this.currentImg.nextId;
             },
             sendComment: function(event) {
                 event.preventDefault();

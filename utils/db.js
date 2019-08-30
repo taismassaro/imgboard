@@ -31,18 +31,15 @@ exports.uploadImg = (url, username, title, description, tags) => {
         )
         .then(data => {
             if (tags) {
-                console.log("tags in query:", Array.isArray(tags));
                 let id = data.rows[0].id;
-                // let tagArray = `(SELECT )`;
-
                 let count = 1;
-db.query(
-    `INSERT INTO tags (img_id, tag) VALUES ${tags.map(
-        tag => `($1, $${++count})`
-    )}`,
-    [id, ...tags]
-).then(result => {
-                    console.log("Result from inserting tags:", result);
+                db.query(
+                    `INSERT INTO tags (img_id, tag) VALUES ${tags.map(
+                        tag => `($1, $${++count})`
+                    )}`,
+                    [id, ...tags]
+                ).catch(error => {
+                    console.log("Error inserting tags:", error);
                 });
             }
             return data.rows[0];
@@ -67,6 +64,14 @@ exports.currentImg = id => {
         )
         .then(currentImg => {
             return currentImg.rows[0];
+        });
+};
+
+exports.getTags = imgId => {
+    return db
+        .query(`SELECT tag FROM tags WHERE img_id = $1`, [imgId])
+        .then(tags => {
+            return tags.rows;
         });
 };
 

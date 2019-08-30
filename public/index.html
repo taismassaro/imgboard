@@ -109,6 +109,15 @@
                     <p class="modal-description">{{currentImg.description}}</p>
                 </div>
 
+                <!-- SHOW TAGS UNDER IMAGE -->
+                <div id="tags" v-if="tags.length > 0">
+                    <div
+                        v-for="tag in tags"
+                    >
+                        <p class="modal-tag">{{tag}}</p>
+                    </div>
+                </div>
+
                 <!-- COMMENTS SECTION -->
                 <div id="modal-comments">
 
