@@ -23,7 +23,6 @@
             tag: ""
         },
         mounted: function() {
-            // must be a normal function so we can still have access to "this"
             console.log("Vue is mounted.");
             var that = this;
 
@@ -50,7 +49,7 @@
                     history.pushState({}, "", "/");
                 }
             });
-
+            this.randomUser();
             this.scroll();
         },
         methods: {
@@ -158,6 +157,23 @@
                         }
                     }
                 }, 500);
+            },
+            randomUser: function() {
+                var that = this;
+
+                axios
+                    .get("https://randomuser.me/api/?inc=login&noinfo")
+                    .then(function(login) {
+                        console.log(
+                            "random user login:",
+                            login.data.results[0].login.username
+                        );
+                        that.form.username =
+                            login.data.results[0].login.username;
+                    })
+                    .catch(function(error) {
+                        console.log("Error fetching random user:", error);
+                    });
             }
         }
     });
@@ -191,6 +207,7 @@
             console.log("Component's this:", this);
             // console.log("Current Image:", this.imgId);
             this.loadData();
+            this.randomUser();
         },
 
         watch: {
@@ -227,6 +244,23 @@
             hideModal: function() {
                 this.$emit("hide");
                 console.log("hideModal triggered");
+            },
+            randomUser: function() {
+                var that = this;
+
+                axios
+                    .get("https://randomuser.me/api/?inc=login&noinfo")
+                    .then(function(login) {
+                        console.log(
+                            "random user login:",
+                            login.data.results[0].login.username
+                        );
+                        that.form.username =
+                            login.data.results[0].login.username;
+                    })
+                    .catch(function(error) {
+                        console.log("Error fetching random user:", error);
+                    });
             },
             showPrev: function() {
                 location.hash = "#" + this.currentImg.prevId;

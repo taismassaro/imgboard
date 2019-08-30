@@ -18,6 +18,8 @@ First Vue.js project developed at Spiced Academy, August 2019.
 -   Commenting on images
 -   Tagging images
 -   Filtering images by tag
+-   Moment.js to format date to how long ago something was posted
+-   RandomUser API to generate usernames
 
 # Technologies
 
