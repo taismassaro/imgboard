@@ -23,23 +23,21 @@
             tag: ""
         },
         mounted: function() {
-            // must be a normal function so we can still have access to "this"
             console.log("Vue is mounted.");
-            if (this.images.length) {
-                var that = this;
+            var that = this;
 
-                axios
-                    .get("/images")
-                    .then(function(dbImages) {
-                        that.images = dbImages.data;
-                        var lastIndex = that.images.length - 1;
-                        that.lastId = that.images[lastIndex].id;
-                        console.log("lastId", that.lastId);
-                    })
-                    .catch(function(error) {
-                        console.log("Error fetching images:", error);
-                    });
-            }
+            axios
+                .get("/images")
+                .then(function(dbImages) {
+                    that.images = dbImages.data;
+                    var lastIndex = that.images.length - 1;
+                    that.lastId = that.images[lastIndex].id;
+                    console.log("lastId", that.lastId);
+                })
+                .catch(function(error) {
+                    console.log("Error fetching images:", error);
+                });
+
             addEventListener("hashchange", function() {
                 var hashId = parseInt(location.hash.slice(1));
                 if (typeof hashId === "number" && isNaN(hashId) === false) {
@@ -209,6 +207,7 @@
             console.log("Component's this:", this);
             // console.log("Current Image:", this.imgId);
             this.loadData();
+            this.randomUser();
         },
 
         watch: {
@@ -245,6 +244,23 @@
             hideModal: function() {
                 this.$emit("hide");
                 console.log("hideModal triggered");
+            },
+            randomUser: function() {
+                var that = this;
+
+                axios
+                    .get("https://randomuser.me/api/?inc=login&noinfo")
+                    .then(function(login) {
+                        console.log(
+                            "random user login:",
+                            login.data.results[0].login.username
+                        );
+                        that.form.username =
+                            login.data.results[0].login.username;
+                    })
+                    .catch(function(error) {
+                        console.log("Error fetching random user:", error);
+                    });
             },
             showPrev: function() {
                 location.hash = "#" + this.currentImg.prevId;
