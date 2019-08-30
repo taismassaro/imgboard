@@ -91,9 +91,13 @@ app.post("/upload", uploader.single("file"), s3.upload, (req, res) => {
     const { filename } = req.file;
     const url = config.s3Url + filename;
     const { username, title, description } = req.body;
-    console.log("URL:", url);
+    const tags = req.body.tags.split(',');
 
-    db.uploadImg(url, username, title, description)
+    console.log("tags in index.js:", typeof tags);
+    console.log("tags in index.js:", Array.isArray(tags));
+
+
+    db.uploadImg(url, username, title, description, tags)
         .then(data => {
             console.log("Returned values from uploadImg query:", data);
             res.json(data);

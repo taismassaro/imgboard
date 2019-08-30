@@ -40,7 +40,7 @@
                         name="username"
                         placeholder="username"
                         required
-                                            />
+                    />
 
                     <input
                         @change="uploadFile"
@@ -49,11 +49,17 @@
                         id="file"
                         accept="image/*"
                         required
-                                        />
+                    />
                     <label for="file"
                         ><i class="fas fa-plus"></i> {{uploaded}}</label
                     >
-                    <button @click="submitInput">go</button>
+                    <input
+                        v-model="form.tags"
+                        type="text"
+                        name="tags"
+                        placeholder="tags"
+                    />
+                    <button @click="uploadImg">go</button>
                 </form>
             </section>
 

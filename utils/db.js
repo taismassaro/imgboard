@@ -23,13 +23,28 @@ exports.getImgs = id => {
         });
 };
 
-exports.uploadImg = (url, username, title, description) => {
+exports.uploadImg = (url, username, title, description, tags) => {
     return db
         .query(
             `INSERT INTO images (url, username, title, description) VALUES ($1, $2, $3, $4) RETURNING *`,
             [url, username, title, description || null]
         )
         .then(data => {
+            if (tags) {
+                console.log("tags in query:", Array.isArray(tags));
+                let id = data.rows[0].id;
+                // let tagArray = `(SELECT )`;
+
+                let count = 1;
+db.query(
+    `INSERT INTO tags (img_id, tag) VALUES ${tags.map(
+        tag => `($1, $${++count})`
+    )}`,
+    [id, ...tags]
+).then(result => {
+                    console.log("Result from inserting tags:", result);
+                });
+            }
             return data.rows[0];
         });
 };

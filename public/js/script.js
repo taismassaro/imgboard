@@ -14,6 +14,7 @@
                 title: "",
                 description: "",
                 username: "",
+                tags: "",
                 file: null
             },
 
@@ -39,7 +40,6 @@
 
             addEventListener("hashchange", function() {
                 var hashId = parseInt(location.hash.slice(1));
-
                 if (typeof hashId === "number" && isNaN(hashId) === false) {
                     console.log("SHOW MODAL");
                     that.imgId = location.hash.slice(1);
@@ -53,15 +53,18 @@
             this.scroll();
         },
         methods: {
-            submitInput: function(event) {
+            uploadImg: function(event) {
                 event.preventDefault();
                 console.log("Clicked submit button.");
                 console.log("this:", this);
+                console.log("tags:", this.form.tags);
+                console.log("split tags in script.js:", Array.isArray(this.form.tags.split(",")));
 
                 var formData = new FormData();
                 formData.append("title", this.form.title);
                 formData.append("description", this.form.description);
                 formData.append("username", this.form.username);
+                formData.append("tags", this.form.tags);
                 formData.append("file", this.form.file);
 
                 var that = this;
@@ -175,7 +178,9 @@
         watch: {
             // watches for changes in the instance props
             imgId: function() {
+                if (this.imgId !== this.currentImg.id) {
                 this.loadData();
+            }
             }
         },
 
