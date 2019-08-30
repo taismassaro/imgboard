@@ -3,5 +3,6 @@ DROP TABLE IF EXISTS tags;
 CREATE TABLE tags(
     img_id INTEGER NOT NULL REFERENCES images(id),
     tag VARCHAR(255) NOT NULL,
+    PRIMARY KEY (img_id, tag),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

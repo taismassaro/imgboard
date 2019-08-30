@@ -68,11 +68,26 @@ app.get("/images", (req, res) => {
 app.get("/images/:lastId", (req, res) => {
     console.log("GET request to /images/lastId");
     console.log("req in /images", req.params);
-
     let lastId = req.params.lastId;
     db.getImgs(lastId)
         .then(imgs => {
             console.log("Imgs", imgs);
+            res.json(imgs);
+        })
+        .catch(error => {
+            console.log("Error in infinite scroll query:", error);
+        });
+});
+
+///// IMAGES BY TAG /////
+
+app.get("/images/tags/:tag", (req, res) => {
+    console.log("GET request to /images/tags/tag");
+    console.log("req in /images", req.params);
+    let tag = req.params.tag;
+    db.getImgsByTag(tag)
+        .then(imgs => {
+            console.log("Imgs by tag", imgs);
             res.json(imgs);
         })
         .catch(error => {
@@ -91,10 +106,7 @@ app.post("/upload", uploader.single("file"), s3.upload, (req, res) => {
     const { filename } = req.file;
     const url = config.s3Url + filename;
     const { username, title, description } = req.body;
-    const tags = req.body.tags.split(",");
-
-    console.log("tags in index.js:", typeof tags);
-    console.log("tags in index.js:", Array.isArray(tags));
+    const tags = Array.from(new Set(req.body.tags.split(",")));
 
     db.uploadImg(url, username, title, description, tags)
         .then(data => {

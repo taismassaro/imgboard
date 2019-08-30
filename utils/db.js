@@ -23,6 +23,23 @@ exports.getImgs = id => {
         });
 };
 
+///// REQUEST IMAGES BY TAG /////
+
+exports.getImgsByTag = tag => {
+    return db
+        .query(
+            `SELECT *
+        FROM images
+        JOIN tags ON id = img_id
+        WHERE tag = $1
+        ORDER BY id DESC LIMIT 9`,
+            [tag]
+        )
+        .then(imgs => {
+            return imgs.rows;
+        });
+};
+
 exports.uploadImg = (url, username, title, description, tags) => {
     return db
         .query(

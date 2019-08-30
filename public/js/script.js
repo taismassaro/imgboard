@@ -19,7 +19,8 @@
             },
 
             uploaded: "",
-            lastId: ""
+            lastId: "",
+            tag: ""
         },
         mounted: function() {
             // must be a normal function so we can still have access to "this"
@@ -96,12 +97,28 @@
                 this.form.file = event.target.files[0];
                 this.uploaded = event.target.files[0].name;
             },
-            hideModal: function() {
+            hideModal: function(tag) {
                 if (this.showModal === true) {
                     this.showModal = false;
                     location.hash = "";
                     history.pushState({}, "", "/");
                 }
+                if (tag) {
+                    this.tag = tag;
+                    var that = this;
+                    axios
+                        .get("/images/tags/" + tag)
+                        .then(function(dbImages) {
+                            that.images = dbImages.data;
+                            var lastIndex = that.images.length - 1;
+                            that.lastId = that.images[lastIndex].id;
+                            console.log("lastId", that.lastId);
+                        })
+                        .catch(function(error) {
+                            console.log("Error fetching images:", error);
+                        });
+                }
+                console.log("tag from emit", tag);
             },
             scroll: function() {
                 var scrolling = false;
@@ -220,6 +237,10 @@
             },
             showNext: function() {
                 location.hash = "#" + this.currentImg.nextId;
+            },
+            selectTag: function(tag) {
+                console.log("tag in selectTag", tag);
+                this.$emit("hide", tag);
             },
             sendComment: function(event) {
                 event.preventDefault();
