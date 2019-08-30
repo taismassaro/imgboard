@@ -55,7 +55,6 @@ app.get("/images", (req, res) => {
     console.log("GET request to /images");
     db.getImgs()
         .then(imgs => {
-            // console.log("Imgs", imgs);
             res.json(imgs);
         })
         .catch(error => {

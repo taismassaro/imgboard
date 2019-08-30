@@ -14,23 +14,11 @@
         </header>
         <main>
             <!-- UPLOAD IMAGE FORM -->
-            <div id="upload-btn">UPLOAD IMAGE</div>
-            <section>
-                <form autocomplete="off">
-                    <input
-                        v-model="form.title"
-                        type="text"
-                        name="title"
-                        placeholder="title"
-                        required
-                    />
-                    <input
-                        v-model="form.description"
-                        type="text"
-                        name="description"
-                        placeholder="description"
-                        required
-                    />
+            <section id="upload">
+
+            <div @click="uploadForm" id="upload-btn">UPLOAD IMAGE</div>
+            <template v-if="uploading">
+                <form id="upload-form" autocomplete="off">
                     <input
                         v-model="form.username"
                         type="text"
@@ -38,7 +26,6 @@
                         placeholder="username"
                         required
                     />
-
                     <input
                         @change="uploadFile"
                         type="file"
@@ -51,6 +38,19 @@
                         ><i class="fas fa-plus"></i> {{uploaded}}</label
                     >
                     <input
+                        v-model="form.title"
+                        type="text"
+                        name="title"
+                        placeholder="title"
+                        required
+                    />
+                    <textarea
+                        v-model="form.description"
+                        id="description"
+                        name="description"
+                        rows="4" cols="42"
+                    >Describe your image here!</textarea>
+                    <input
                         v-model="form.tags"
                         type="text"
                         name="tags"
@@ -58,20 +58,19 @@
                     />
                     <button @click="uploadImg">go</button>
                 </form>
+            </template>
             </section>
 
             <!-- RENDER ALL IMAGES ON PAGE -->
-            <section>
+            <section id="img-container" v-if="images.length > 0">
                 <div v-if="tag">
                     <h1>Images with tag {{tag}}</h1>
                 </div>
-                <div id="img-container" v-if="images.length > 0">
                     <div class="card" v-for="img in images" :key="img.url">
                         <a :href="'#' + img.id">OPEN</a>
                         <img :src="img.url" :alt="img.title" />
                         <p>{{img.title}}</p>
                     </div>
-                </div>
             </section>
 
             <!-- VUE COMPONENT -->
@@ -130,7 +129,6 @@
                             name="username"
                             placeholder="username" required
                         />
-                        <!-- <label for="comment">Comment:</label> -->
                         <textarea
                             v-model="form.comment"
                             id="comment"
