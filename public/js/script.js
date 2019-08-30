@@ -14,11 +14,13 @@
                 title: "",
                 description: "",
                 username: "",
+                tags: "",
                 file: null
             },
 
             uploaded: "",
-            lastId: ""
+            lastId: "",
+            tag: ""
         },
         mounted: function() {
             // must be a normal function so we can still have access to "this"
@@ -39,7 +41,6 @@
 
             addEventListener("hashchange", function() {
                 var hashId = parseInt(location.hash.slice(1));
-
                 if (typeof hashId === "number" && isNaN(hashId) === false) {
                     console.log("SHOW MODAL");
                     that.imgId = location.hash.slice(1);
@@ -53,15 +54,21 @@
             this.scroll();
         },
         methods: {
-            submitInput: function(event) {
+            uploadImg: function(event) {
                 event.preventDefault();
                 console.log("Clicked submit button.");
                 console.log("this:", this);
+                console.log("tags:", this.form.tags);
+                console.log(
+                    "split tags in script.js:",
+                    Array.isArray(this.form.tags.split(","))
+                );
 
                 var formData = new FormData();
                 formData.append("title", this.form.title);
                 formData.append("description", this.form.description);
                 formData.append("username", this.form.username);
+                formData.append("tags", this.form.tags);
                 formData.append("file", this.form.file);
 
                 var that = this;
@@ -90,12 +97,28 @@
                 this.form.file = event.target.files[0];
                 this.uploaded = event.target.files[0].name;
             },
-            hideModal: function() {
+            hideModal: function(tag) {
                 if (this.showModal === true) {
                     this.showModal = false;
                     location.hash = "";
                     history.pushState({}, "", "/");
                 }
+                if (tag) {
+                    this.tag = tag;
+                    var that = this;
+                    axios
+                        .get("/images/tags/" + tag)
+                        .then(function(dbImages) {
+                            that.images = dbImages.data;
+                            var lastIndex = that.images.length - 1;
+                            that.lastId = that.images[lastIndex].id;
+                            console.log("lastId", that.lastId);
+                        })
+                        .catch(function(error) {
+                            console.log("Error fetching images:", error);
+                        });
+                }
+                console.log("tag from emit", tag);
             },
             scroll: function() {
                 var scrolling = false;
@@ -156,6 +179,8 @@
 
                 comments: [],
 
+                tags: [],
+
                 form: {
                     username: "",
                     comment: ""
@@ -175,7 +200,9 @@
         watch: {
             // watches for changes in the instance props
             imgId: function() {
-                this.loadData();
+                if (this.imgId !== this.currentImg.id) {
+                    this.loadData();
+                }
             }
         },
 
@@ -190,7 +217,8 @@
                             that.error = "no image";
                             // that.$emit("hide");
                         } else {
-                            let { comments, image } = dbData.data;
+                            let { comments, image, tags } = dbData.data;
+                            that.tags = tags;
                             that.comments = comments;
                             that.currentImg = image;
                             that.error = "";
@@ -205,10 +233,14 @@
                 console.log("hideModal triggered");
             },
             showPrev: function() {
-                location.hash = `#${this.currentImg.prevId}`;
+                location.hash = "#" + this.currentImg.prevId;
             },
             showNext: function() {
-                location.hash = `#${this.currentImg.nextId}`;
+                location.hash = "#" + this.currentImg.nextId;
+            },
+            selectTag: function(tag) {
+                console.log("tag in selectTag", tag);
+                this.$emit("hide", tag);
             },
             sendComment: function(event) {
                 event.preventDefault();

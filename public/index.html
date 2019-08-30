@@ -14,7 +14,7 @@
     </head>
     <body>
         <header>
-            <div id="logo"><span>img</span>_src</div>
+            <div id="logo"><span><a href="/">img</a></span>_src</div>
         </header>
         <main>
             <!-- UPLOAD IMAGE FORM -->
@@ -40,7 +40,7 @@
                         name="username"
                         placeholder="username"
                         required
-                                            />
+                    />
 
                     <input
                         @change="uploadFile"
@@ -49,16 +49,25 @@
                         id="file"
                         accept="image/*"
                         required
-                                        />
+                    />
                     <label for="file"
                         ><i class="fas fa-plus"></i> {{uploaded}}</label
                     >
-                    <button @click="submitInput">go</button>
+                    <input
+                        v-model="form.tags"
+                        type="text"
+                        name="tags"
+                        placeholder="tags"
+                    />
+                    <button @click="uploadImg">go</button>
                 </form>
             </section>
 
             <!-- RENDER ALL IMAGES ON PAGE -->
             <section>
+                <div v-if="tag">
+                    <h1>Images with tag {{tag}}</h1>
+                </div>
                 <div id="img-container" v-if="images.length > 0">
                     <div class="card" v-for="img in images" :key="img.url">
                         <a :href="'#' + img.id">OPEN</a>
@@ -101,6 +110,15 @@
                     <h1 class="modal-title">{{currentImg.title}}</h1>
                     <p class="modal-author">by <strong>{{currentImg.username}}</strong> <span>{{currentImg.created_at}}</span></p>
                     <p class="modal-description">{{currentImg.description}}</p>
+                </div>
+
+                <!-- SHOW TAGS UNDER IMAGE -->
+                <div id="tags" v-if="tags.length > 0">
+                    <div
+                        v-for="tag in tags"
+                    >
+                        <p @click="selectTag(tag)" class="modal-tag">{{tag}}</p>
+                    </div>
                 </div>
 
                 <!-- COMMENTS SECTION -->

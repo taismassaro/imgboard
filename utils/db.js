@@ -23,13 +23,42 @@ exports.getImgs = id => {
         });
 };
 
-exports.uploadImg = (url, username, title, description) => {
+///// REQUEST IMAGES BY TAG /////
+
+exports.getImgsByTag = tag => {
+    return db
+        .query(
+            `SELECT *
+        FROM images
+        JOIN tags ON id = img_id
+        WHERE tag = $1
+        ORDER BY id DESC LIMIT 9`,
+            [tag]
+        )
+        .then(imgs => {
+            return imgs.rows;
+        });
+};
+
+exports.uploadImg = (url, username, title, description, tags) => {
     return db
         .query(
             `INSERT INTO images (url, username, title, description) VALUES ($1, $2, $3, $4) RETURNING *`,
             [url, username, title, description || null]
         )
         .then(data => {
+            if (tags) {
+                let id = data.rows[0].id;
+                let count = 1;
+                db.query(
+                    `INSERT INTO tags (img_id, tag) VALUES ${tags.map(
+                        tag => `($1, $${++count})`
+                    )}`,
+                    [id, ...tags]
+                ).catch(error => {
+                    console.log("Error inserting tags:", error);
+                });
+            }
             return data.rows[0];
         });
 };
@@ -52,6 +81,14 @@ exports.currentImg = id => {
         )
         .then(currentImg => {
             return currentImg.rows[0];
+        });
+};
+
+exports.getTags = imgId => {
+    return db
+        .query(`SELECT tag FROM tags WHERE img_id = $1`, [imgId])
+        .then(tags => {
+            return tags.rows;
         });
 };
 
