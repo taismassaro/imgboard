@@ -59,10 +59,6 @@
                 console.log("Clicked submit button.");
                 console.log("this:", this);
                 console.log("tags:", this.form.tags);
-                console.log(
-                    "split tags in script.js:",
-                    Array.isArray(this.form.tags.split(","))
-                );
 
                 var formData = new FormData();
                 formData.append("title", this.form.title);

@@ -106,6 +106,7 @@
                 <div id="modal-img">
                     <p @click="hideModal">X</p>
                     <p><span @click="showNext" v-if="currentImg.nextId"><</span><span @click="showPrev" v-if="currentImg.prevId">></span></p>
+                    <p>DELETE</p>
                     <img :src="currentImg.url">
                     <h1 class="modal-title">{{currentImg.title}}</h1>
                     <p class="modal-author">by <strong>{{currentImg.username}}</strong> <span>{{currentImg.created_at}}</span></p>
