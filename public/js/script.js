@@ -25,20 +25,21 @@
         mounted: function() {
             // must be a normal function so we can still have access to "this"
             console.log("Vue is mounted.");
-            var that = this;
+            if (this.images.length) {
+                var that = this;
 
-            axios
-                .get("/images")
-                .then(function(dbImages) {
-                    that.images = dbImages.data;
-                    var lastIndex = that.images.length - 1;
-                    that.lastId = that.images[lastIndex].id;
-                    console.log("lastId", that.lastId);
-                })
-                .catch(function(error) {
-                    console.log("Error fetching images:", error);
-                });
-
+                axios
+                    .get("/images")
+                    .then(function(dbImages) {
+                        that.images = dbImages.data;
+                        var lastIndex = that.images.length - 1;
+                        that.lastId = that.images[lastIndex].id;
+                        console.log("lastId", that.lastId);
+                    })
+                    .catch(function(error) {
+                        console.log("Error fetching images:", error);
+                    });
+            }
             addEventListener("hashchange", function() {
                 var hashId = parseInt(location.hash.slice(1));
                 if (typeof hashId === "number" && isNaN(hashId) === false) {
@@ -50,7 +51,7 @@
                     history.pushState({}, "", "/");
                 }
             });
-
+            this.randomUser();
             this.scroll();
         },
         methods: {
@@ -158,6 +159,23 @@
                         }
                     }
                 }, 500);
+            },
+            randomUser: function() {
+                var that = this;
+
+                axios
+                    .get("https://randomuser.me/api/?inc=login&noinfo")
+                    .then(function(login) {
+                        console.log(
+                            "random user login:",
+                            login.data.results[0].login.username
+                        );
+                        that.form.username =
+                            login.data.results[0].login.username;
+                    })
+                    .catch(function(error) {
+                        console.log("Error fetching random user:", error);
+                    });
             }
         }
     });
