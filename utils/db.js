@@ -84,6 +84,10 @@ exports.currentImg = id => {
         });
 };
 
+exports.deleteImg = id => {
+    return db.query(`DELETE from images`);
+};
+
 exports.getTags = imgId => {
     return db
         .query(`SELECT tag FROM tags WHERE img_id = $1`, [imgId])
