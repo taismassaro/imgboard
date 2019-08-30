@@ -296,6 +296,7 @@
                                 username: "",
                                 comment: ""
                             };
+                            that.randomUser();
                         })
                         .catch(function(error) {
                             console.log("Error in POST /comments", error);
