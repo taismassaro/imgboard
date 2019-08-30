@@ -6,7 +6,7 @@
         el: "main",
         data: {
             showModal: false,
-            imgId: "",
+            imgId: location.hash.slice(1),
 
             images: [],
 
@@ -14,34 +14,57 @@
                 title: "",
                 description: "",
                 username: "",
+                tags: "",
                 file: null
             },
 
-            uploaded: ""
+            uploaded: "",
+            lastId: "",
+            tag: ""
         },
         mounted: function() {
             // must be a normal function so we can still have access to "this"
             console.log("Vue is mounted.");
             var that = this;
+
             axios
                 .get("/images")
                 .then(function(dbImages) {
                     that.images = dbImages.data;
+                    var lastIndex = that.images.length - 1;
+                    that.lastId = that.images[lastIndex].id;
+                    console.log("lastId", that.lastId);
                 })
                 .catch(function(error) {
                     console.log("Error fetching images:", error);
                 });
+
+            addEventListener("hashchange", function() {
+                var hashId = parseInt(location.hash.slice(1));
+                if (typeof hashId === "number" && isNaN(hashId) === false) {
+                    console.log("SHOW MODAL");
+                    that.imgId = location.hash.slice(1);
+                    that.showModal = true;
+                } else {
+                    location.hash = "";
+                    history.pushState({}, "", "/");
+                }
+            });
+
+            this.scroll();
         },
         methods: {
-            submitInput: function(event) {
+            uploadImg: function(event) {
                 event.preventDefault();
                 console.log("Clicked submit button.");
                 console.log("this:", this);
+                console.log("tags:", this.form.tags);
 
                 var formData = new FormData();
                 formData.append("title", this.form.title);
                 formData.append("description", this.form.description);
                 formData.append("username", this.form.username);
+                formData.append("tags", this.form.tags);
                 formData.append("file", this.form.file);
 
                 var that = this;
@@ -70,14 +93,71 @@
                 this.form.file = event.target.files[0];
                 this.uploaded = event.target.files[0].name;
             },
-            toggleModal: function(imgId) {
-                if (this.showModal === false) {
-                    this.imgId = imgId;
-                    console.log("Current Image:", imgId);
-                    this.showModal = true;
-                } else {
+            hideModal: function(tag) {
+                if (this.showModal === true) {
                     this.showModal = false;
+                    location.hash = "";
+                    history.pushState({}, "", "/");
                 }
+                if (tag) {
+                    this.tag = tag;
+                    var that = this;
+                    axios
+                        .get("/images/tags/" + tag)
+                        .then(function(dbImages) {
+                            that.images = dbImages.data;
+                            var lastIndex = that.images.length - 1;
+                            that.lastId = that.images[lastIndex].id;
+                            console.log("lastId", that.lastId);
+                        })
+                        .catch(function(error) {
+                            console.log("Error fetching images:", error);
+                        });
+                }
+                console.log("tag from emit", tag);
+            },
+            scroll: function() {
+                var scrolling = false;
+                var bottom = function() {
+                    return (
+                        document.documentElement.scrollTop +
+                            window.innerHeight ===
+                        document.documentElement.offsetHeight
+                    );
+                };
+                window.onscroll = function() {
+                    scrolling = true;
+                };
+                var that = this;
+
+                setInterval(function() {
+                    if (scrolling) {
+                        scrolling = false;
+                        if (bottom()) {
+                            console.log("that in scroll():", that);
+                            axios
+                                .get(`/images/${that.lastId}`)
+                                .then(function(dbImages) {
+                                    console.log(
+                                        "dbImages in scroll:",
+                                        dbImages
+                                    );
+                                    dbImages.data.forEach(function(image) {
+                                        that.images.push(image);
+                                    });
+                                    var lastIndex = that.images.length - 1;
+                                    that.lastId = that.images[lastIndex].id;
+                                    console.log("lastId", that.lastId);
+                                })
+                                .catch(function(error) {
+                                    console.log(
+                                        "Error fetching images:",
+                                        error
+                                    );
+                                });
+                        }
+                    }
+                }, 500);
             }
         }
     });
@@ -95,37 +175,68 @@
 
                 comments: [],
 
+                tags: [],
+
                 form: {
                     username: "",
                     comment: ""
-                }
+                },
+
+                error: ""
             };
         },
 
         mounted: function() {
-            // runs when the html is loaded
             console.log("Vue component is mounted.");
             console.log("Component's this:", this);
             // console.log("Current Image:", this.imgId);
-            var that = this;
-            axios
-                .get(`/modal/${this.imgId}`)
-                .then(function(dbData) {
-                    console.log("Modal data:", dbData.data);
-                    let { comments, image } = dbData.data;
-                    that.comments = comments;
-                    that.currentImg = image;
-                })
-                .catch(function(error) {
-                    console.log("Error fetching modal data:", error);
-                });
+            this.loadData();
+        },
+
+        watch: {
+            // watches for changes in the instance props
+            imgId: function() {
+                if (this.imgId !== this.currentImg.id) {
+                    this.loadData();
+                }
+            }
         },
 
         methods: {
-            // event handlers (only runs when the user interacts with the page)
+            loadData: function() {
+                var that = this;
+                axios
+                    .get(`/modal/${that.imgId}`)
+                    .then(function(dbData) {
+                        console.log("dbData", dbData);
+                        if (dbData.data === false) {
+                            that.error = "no image";
+                            // that.$emit("hide");
+                        } else {
+                            let { comments, image, tags } = dbData.data;
+                            that.tags = tags;
+                            that.comments = comments;
+                            that.currentImg = image;
+                            that.error = "";
+                        }
+                    })
+                    .catch(function(error) {
+                        console.log("Error fetching modal data:", error);
+                    });
+            },
             hideModal: function() {
                 this.$emit("hide");
                 console.log("hideModal triggered");
+            },
+            showPrev: function() {
+                location.hash = "#" + this.currentImg.prevId;
+            },
+            showNext: function() {
+                location.hash = "#" + this.currentImg.nextId;
+            },
+            selectTag: function(tag) {
+                console.log("tag in selectTag", tag);
+                this.$emit("hide", tag);
             },
             sendComment: function(event) {
                 event.preventDefault();

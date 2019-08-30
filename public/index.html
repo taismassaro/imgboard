@@ -14,9 +14,10 @@
     </head>
     <body>
         <header>
-            <div id="logo"><span>img</span>_src</div>
+            <div id="logo"><a href="/"><span>img</span>_src</a></div>
         </header>
         <main>
+            <!-- UPLOAD IMAGE FORM -->
             <section>
                 <form autocomplete="off">
                     <input
@@ -24,18 +25,21 @@
                         type="text"
                         name="title"
                         placeholder="title"
+                        required
                     />
                     <input
                         v-model="form.description"
                         type="text"
                         name="description"
                         placeholder="description"
+                        required
                     />
                     <input
                         v-model="form.username"
                         type="text"
                         name="username"
                         placeholder="username"
+                        required
                     />
 
                     <input
@@ -44,22 +48,29 @@
                         name="file"
                         id="file"
                         accept="image/*"
+                        required
                     />
                     <label for="file"
                         ><i class="fas fa-plus"></i> {{uploaded}}</label
                     >
-                    <button @click="submitInput">go</button>
+                    <input
+                        v-model="form.tags"
+                        type="text"
+                        name="tags"
+                        placeholder="tags"
+                    />
+                    <button @click="uploadImg">go</button>
                 </form>
             </section>
 
+            <!-- RENDER ALL IMAGES ON PAGE -->
             <section>
+                <div v-if="tag">
+                    <h1>Images with tag {{tag}}</h1>
+                </div>
                 <div id="img-container" v-if="images.length > 0">
-                    <div
-                        class="card"
-                        v-for="img in images"
-                        :key="img.url"
-                        @click="toggleModal(img.id)"
-                    >
+                    <div class="card" v-for="img in images" :key="img.url">
+                        <a :href="'#' + img.id">OPEN</a>
                         <img :src="img.url" :alt="img.title" />
                         <p>{{img.title}}</p>
                     </div>
@@ -71,7 +82,7 @@
                 v-if="showModal"
                 :img-id="imgId"
                 :show-modal="showModal"
-                @hide="toggleModal"
+                @hide="hideModal"
             >
             </img-modal>
             <!-- VUE COMPONENT -->
@@ -80,15 +91,41 @@
         <!-- VUE COMPONENT TEMPLATE -->
         <script id="modal-template" type="text/x-template">
             <div class="overlay" @click="hideModal">
-                <div id="modal" @click.stop>
-                    <div id="modal-img">
+
+                <!-- ERROR MESSAGE FOR NO IMAGE -->
+                <template v-if="error === 'no image'">
+                    <div class="modal">
+                    <p>Oops, this image doesn't exist.</p>
+                </div>
+                </template>
+
+                <!-- IMAGE MODAL -->
+                <div class="modal" @click.stop v-else>
+
+                <!-- IMAGE DATA -->
+                <div id="modal-img">
                     <p @click="hideModal">X</p>
+                    <p><span @click="showNext" v-if="currentImg.nextId"><</span><span @click="showPrev" v-if="currentImg.prevId">></span></p>
+                    <p>DELETE</p>
                     <img :src="currentImg.url">
                     <h1 class="modal-title">{{currentImg.title}}</h1>
                     <p class="modal-author">by <strong>{{currentImg.username}}</strong> <span>{{currentImg.created_at}}</span></p>
                     <p class="modal-description">{{currentImg.description}}</p>
                 </div>
+
+                <!-- SHOW TAGS UNDER IMAGE -->
+                <div id="tags" v-if="tags.length > 0">
+                    <div
+                        v-for="tag in tags"
+                    >
+                        <p @click="selectTag(tag)" class="modal-tag">{{tag}}</p>
+                    </div>
+                </div>
+
+                <!-- COMMENTS SECTION -->
                 <div id="modal-comments">
+
+                    <!-- ADD COMMENT FORM -->
                     <form>
                         <input
                             v-model="form.username"
@@ -106,6 +143,7 @@
                         <button @click="sendComment">comment</button>
                     </form>
 
+                    <!-- RENDER ALL COMMENTS -->
                     <div id="comments" v-if="comments.length > 0">
                         <div
                             v-for="comment in comments"

@@ -103,7 +103,7 @@ img {
     z-index: 10;
     overflow: scroll;
 }
-#modal {
+.modal {
     width: 60%;
     margin: 1em auto;
     box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.75);

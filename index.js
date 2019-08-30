@@ -49,13 +49,45 @@ app.use(express.static("public"));
 
 app.use(express.json());
 
-///// GET ALL IMAGES /////
+///// GET FIRST IMAGES /////
 
 app.get("/images", (req, res) => {
     console.log("GET request to /images");
     db.getImgs()
         .then(imgs => {
             // console.log("Imgs", imgs);
+            res.json(imgs);
+        })
+        .catch(error => {
+            console.log("Error in getImgs query:", error);
+        });
+});
+
+///// INFINITE SCROLL IMAGES /////
+
+app.get("/images/:lastId", (req, res) => {
+    console.log("GET request to /images/lastId");
+    console.log("req in /images", req.params);
+    let lastId = req.params.lastId;
+    db.getImgs(lastId)
+        .then(imgs => {
+            console.log("Imgs", imgs);
+            res.json(imgs);
+        })
+        .catch(error => {
+            console.log("Error in infinite scroll query:", error);
+        });
+});
+
+///// IMAGES BY TAG /////
+
+app.get("/images/tags/:tag", (req, res) => {
+    console.log("GET request to /images/tags/tag");
+    console.log("req in /images", req.params);
+    let tag = req.params.tag;
+    db.getImgsByTag(tag)
+        .then(imgs => {
+            console.log("Imgs by tag", imgs);
             res.json(imgs);
         })
         .catch(error => {
@@ -74,9 +106,9 @@ app.post("/upload", uploader.single("file"), s3.upload, (req, res) => {
     const { filename } = req.file;
     const url = config.s3Url + filename;
     const { username, title, description } = req.body;
-    console.log("URL:", url);
+    const tags = Array.from(new Set(req.body.tags.split(",")));
 
-    db.uploadImg(url, username, title, description)
+    db.uploadImg(url, username, title, description, tags)
         .then(data => {
             console.log("Returned values from uploadImg query:", data);
             res.json(data);
@@ -95,28 +127,42 @@ app.get("/modal/:id", (req, res) => {
     db.currentImg(id)
         .then(currentImg => {
             console.log("Current img:", currentImg);
-            db.getComments(currentImg.id)
-                .then(comments => {
-                    let imgDate = moment(currentImg.created_at).fromNow();
-                    currentImg.created_at = imgDate;
-                    comments.forEach(comment => {
-                        let commentDate = moment(comment.date).fromNow();
-                        comment.date = commentDate;
-                    });
-                    console.log("Comments", comments);
-
-                    let data = {
-                        image: currentImg,
-                        comments: comments
-                    };
-                    res.json(data);
-                })
-                .catch(error => {
-                    console.log("Error in getComments query:", error);
+            if (!currentImg) {
+                console.log("No matching data.");
+            }
+            db.getTags(currentImg.id).then(tags => {
+                console.log("current image tags:", tags);
+                let imgTags = [];
+                tags.forEach(item => {
+                    imgTags.push(item.tag);
                 });
+                console.log("imgTags", imgTags);
+
+                db.getComments(currentImg.id)
+                    .then(comments => {
+                        let imgDate = moment(currentImg.created_at).fromNow();
+                        currentImg.created_at = imgDate;
+                        comments.forEach(comment => {
+                            let commentDate = moment(comment.date).fromNow();
+                            comment.date = commentDate;
+                        });
+                        console.log("Comments", comments);
+
+                        let data = {
+                            image: currentImg,
+                            tags: imgTags,
+                            comments: comments
+                        };
+                        res.json(data);
+                    })
+                    .catch(error => {
+                        console.log("Error in getComments query:", error);
+                    });
+            });
         })
         .catch(error => {
             console.log("Error in currentImg query:", error);
+            res.json(false);
         });
 });
 
