@@ -18,6 +18,7 @@
                 file: null
             },
 
+            uploading: "",
             uploaded: "",
             lastId: "",
             tag: ""
@@ -53,6 +54,10 @@
             this.scroll();
         },
         methods: {
+            uploadForm: function() {
+                console.log("open upload form");
+                this.uploading = true;
+            },
             uploadImg: function(event) {
                 event.preventDefault();
                 console.log("Clicked submit button.");
@@ -71,6 +76,7 @@
                     .post("/upload", formData)
                     .then(function(res) {
                         console.log("Response from POST /upload:", res);
+
                         var img = res.data;
                         that.images.unshift(img);
                         that.uploaded = "";
@@ -81,6 +87,10 @@
                             username: "",
                             file: null
                         };
+
+                        that.randomUser();
+
+                        that.uploading = false;
                     })
                     .catch(function(error) {
                         console.log("Error in POST /upload", error);
@@ -205,7 +215,6 @@
         mounted: function() {
             console.log("Vue component is mounted.");
             console.log("Component's this:", this);
-            // console.log("Current Image:", this.imgId);
             this.loadData();
             this.randomUser();
         },
@@ -228,7 +237,6 @@
                         console.log("dbData", dbData);
                         if (dbData.data === false) {
                             that.error = "no image";
-                            // that.$emit("hide");
                         } else {
                             let { comments, image, tags } = dbData.data;
                             that.tags = tags;

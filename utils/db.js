@@ -98,7 +98,6 @@ exports.getComments = imgId => {
             imgId
         ])
         .then(comments => {
-            // console.log("Comments result:", comments);
             return comments.rows;
         });
 };
