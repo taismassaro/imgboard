@@ -5,7 +5,6 @@
     new Vue({
         el: "main",
         data: {
-            showModal: false,
             imgId: location.hash.slice(1),
 
             images: [],
@@ -44,7 +43,6 @@
                 if (typeof hashId === "number" && isNaN(hashId) === false) {
                     console.log("SHOW MODAL");
                     that.imgId = location.hash.slice(1);
-                    that.showModal = true;
                 } else {
                     location.hash = "";
                     history.pushState({}, "", "/");
@@ -103,8 +101,8 @@
                 this.uploaded = event.target.files[0].name;
             },
             hideModal: function(tag) {
-                if (this.showModal === true) {
-                    this.showModal = false;
+                if (this.imgId) {
+                    this.imgId = "";
                     location.hash = "";
                     history.pushState({}, "", "/");
                 }
@@ -193,7 +191,7 @@
     Vue.component("img-modal", {
         // data, methods, mounted
         template: "#modal-template",
-        props: ["imgId", "showModal"],
+        props: ["imgId"],
 
         data: function() {
             return {
