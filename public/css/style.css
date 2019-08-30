@@ -1,8 +1,8 @@
 :root {
-    --main: #d2fafb;
-    --light: #51dacf;
-    --dark: #41aaa8;
-    --accent: #2c003e;
+    --main: #e4f2f0;
+    --light: #99d8d0;
+    --dark: #70416d;
+    --accent: #170a19;
 }
 * {
     box-sizing: border-box;
@@ -10,7 +10,7 @@
 /* PHONE UP */
 body {
     background: var(--main);
-    font-family: "Poppins", sans-serif;
+    font-family: "Noto Sans", sans-serif;
     font-weight: 300;
     font-size: 20px;
     color: var(--dark);
@@ -25,15 +25,15 @@ main {
 header {
     width: 100vw;
     padding: 1em 2em;
-    /* background: var(--accent); */
+    text-align: center;
 }
 #logo {
-    color: var(--accent);
-    font-weight: 400;
+    /* font-family: "Arial", sans-serif; */
+
+    color: var(--dark);
+    /* font-weight: 700; */
     font-size: 2em;
-}
-#logo span {
-    font-weight: 900;
+    /* text-transform: uppercase; */
 }
 
 section {
@@ -132,11 +132,11 @@ img {
     display: block;
 }
 a {
-    color: var(--accent);
+    /* color: var(--accent); */
     text-decoration: none;
 }
 a:visited {
-    color: var(--accent);
+    color: var(--dark);
 }
 a:hover {
     text-decoration: underline;
