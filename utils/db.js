@@ -47,7 +47,7 @@ exports.uploadImg = (url, username, title, description, tags) => {
             [url, username, title, description || null]
         )
         .then(data => {
-            if (tags) {
+            if (tags && tags !== [" "]) {
                 let id = data.rows[0].id;
                 let count = 1;
                 db.query(
