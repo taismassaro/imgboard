@@ -3,7 +3,7 @@
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link href="https://fonts.googleapis.com/css?family=Abril+Fatface|Source+Code+Pro:400,600&display=swap" rel="stylesheet">
-        <!-- <link href="https://fonts.googleapis.com/css?family=Noto+Sans:400,700|Ubuntu+Mono&display=swap" rel="stylesheet"> -->
+
         <link rel="stylesheet" href="/css/normalize.css" />
         <link rel="stylesheet" href="/css/style.css" />
         <script src="https://kit.fontawesome.com/4647f9cbe3.js"></script>
@@ -11,53 +11,54 @@
     </head>
     <body>
         <header>
-            <div id="logo"><a href="/">can someone photoshop</a></div>
+            <a id="logo" href="/">can someone photoshop</a>
         </header>
         <main>
             <!-- UPLOAD IMAGE FORM -->
             <section id="upload">
-
-            <div @click="uploadForm" id="upload-btn">UPLOAD IMAGE</div>
+                <input
+                    @change="uploadFile"
+                    type="file"
+                    name="file"
+                    id="file"
+                    accept="image/*"
+                    required
+                />
+                <label id="upload-btn" for="file"
+                    ><i class="fas fa-plus-circle"></i> {{uploaded}}</label
+                >
             <template v-if="uploading">
                 <form id="upload-form" autocomplete="off">
-                    <input
-                        v-model="form.username"
-                        type="text"
-                        name="username"
-                        placeholder="username"
-                        required
-                    />
-                    <input
-                        @change="uploadFile"
-                        type="file"
-                        name="file"
-                        id="file"
-                        accept="image/*"
-                        required
-                    />
-                    <label for="file"
-                        ><i class="fas fa-plus"></i>+ {{uploaded}}</label
-                    >
+                    <label>username</label>
+
+                    <div class="username-input">{{form.username}}
+                    </div>
+                    <label for="title">title</label>
                     <input
                         v-model="form.title"
                         type="text"
                         name="title"
-                        placeholder="title"
                         required
+                        ref="titleInput"
                     />
+                    <label for="description">description</label>
+
                     <textarea
                         v-model="form.description"
                         id="description"
                         name="description"
                         rows="4" cols="42"
-                    >Describe your image here!</textarea>
+                    ></textarea>
+                    <label for="tags">tags</label>
+
                     <input
                         v-model="form.tags"
                         type="text"
                         name="tags"
-                        placeholder="tags"
                     />
-                    <button @click="uploadImg">go</button>
+                    <div>
+                    <button class="cancel-btn" @click="cancelUpload">Cancel</button><button class="cat-btn" @click="uploadImg">UPLOAD</button>
+                </div>
                 </form>
             </template>
             </section>
@@ -102,8 +103,6 @@
                 <div class="modal" @click.stop v-else>
 
                 <!-- IMAGE DATA -->
-                    <!-- <p @click="hideModal">X</p> -->
-
                     <img class="modal-img" :src="currentImg.url">
                     <div class="modal-nav">
                         <p @click="showNext" v-if="currentImg.nextId">< next</p>
@@ -126,32 +125,34 @@
                 <!-- COMMENTS SECTION -->
                 <div id="modal-comments">
 
-                    <!-- ADD COMMENT FORM -->
-                    <form>
-                        <input
-                            v-model="form.username"
-                            type="text"
-                            name="username"
-                            placeholder="username" required
-                        />
-                        <textarea
-                            v-model="form.comment"
-                            id="comment"
-                            name="comment"
-                            rows="4" cols="42"
-                        >Comment away!</textarea>
-                        <button @click="sendComment">comment</button>
-                    </form>
-
                     <!-- RENDER ALL COMMENTS -->
                     <div id="comments" v-if="comments.length > 0">
                         <div
                             v-for="comment in comments"
                         >
+                        <p class="modal-author"><strong>{{comment.username}}</strong> <span>{{comment.date}}</span></p>
                             <p class="modal-comment">{{comment.comment}}</p>
-                            <p class="modal-author"><strong>{{comment.username}}</strong> <span>{{comment.date}}</span></p>
                         </div>
                     </div>
+
+                    <!-- ADD COMMENT FORM -->
+                    <form id="add-comment">
+                        <label>username</label>
+
+                        <div class="username-input">{{form.username}}
+                        </div>
+                        <label for="comment">comment</label>
+
+                        <textarea
+                            v-model="form.comment"
+                            id="comment"
+                            name="comment"
+                            rows="4" cols="42"
+                        ></textarea>
+                        <button class="cat-btn" @click="sendComment">comment</button>
+                    </form>
+
+
                 </div>
                 </div>
             </div>
@@ -159,8 +160,7 @@
         <!-- VUE COMPONENT TEMPLATE -->
 
         <footer>
-            A (not so safe) single-page application where anybody can go and
-            upload an image of their choice.<br />Made with
+            A single-page application to remember the <a href="https://twistedsifter.com/2015/05/can-someone-photoshop-the-eiffel-tower-under-my-finger/" target="_blank">meme</a>.<br />Made with
             <span><i class="fas fa-heart"></i></span> and
             <a href="https://vuejs.org/" target="_blank">Vue.js</a> by
             <a href="https://github.com/taismassaro" target="_blank"

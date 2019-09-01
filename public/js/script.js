@@ -48,14 +48,10 @@
                     history.pushState({}, "", "/");
                 }
             });
-            this.randomUser();
+            this.form.username = this.randomUser();
             this.scroll();
         },
         methods: {
-            uploadForm: function() {
-                console.log("open upload form");
-                this.uploading = true;
-            },
             uploadImg: function(event) {
                 event.preventDefault();
                 console.log("Clicked submit button.");
@@ -86,7 +82,7 @@
                             file: null
                         };
 
-                        that.randomUser();
+                        that.form.usernam = that.randomUser();
 
                         that.uploading = false;
                     })
@@ -94,11 +90,24 @@
                         console.log("Error in POST /upload", error);
                     });
             },
+            cancelUpload: function() {
+                event.preventDefault();
+                this.uploaded = "";
+                this.form = {
+                    title: "",
+                    description: "",
+                    file: null
+                };
+                this.uploading = false;
+                console.log(this.$refs);
+                this.$refs.titleInput.removeAttribute("required");
+            },
             uploadFile: function(event) {
                 console.log("Upload file event.");
                 console.log("File:", event.target.files[0]);
                 this.form.file = event.target.files[0];
                 this.uploaded = event.target.files[0].name;
+                this.uploading = true;
             },
             hideModal: function(tag) {
                 if (this.imgId) {
@@ -202,7 +211,7 @@
                 tags: [],
 
                 form: {
-                    username: "",
+                    username: this.randomUser(),
                     comment: ""
                 },
 
@@ -214,7 +223,6 @@
             console.log("Vue component is mounted.");
             console.log("Component's this:", this);
             this.loadData();
-            this.randomUser();
         },
 
         watch: {
@@ -241,6 +249,7 @@
                             that.comments = comments;
                             that.currentImg = image;
                             that.error = "";
+                            console.log("tags.length", that.tags.length);
                         }
                     })
                     .catch(function(error) {
@@ -293,7 +302,7 @@
                             that.comments.unshift(comment);
                             console.log("All comments:", that.comments);
                             that.form = {
-                                username: "",
+                                username: this.randomUser(),
                                 comment: ""
                             };
                             that.randomUser();
