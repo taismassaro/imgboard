@@ -5,7 +5,6 @@
     new Vue({
         el: "main",
         data: {
-            showModal: false,
             imgId: location.hash.slice(1),
 
             images: [],
@@ -44,7 +43,6 @@
                 if (typeof hashId === "number" && isNaN(hashId) === false) {
                     console.log("SHOW MODAL");
                     that.imgId = location.hash.slice(1);
-                    that.showModal = true;
                 } else {
                     location.hash = "";
                     history.pushState({}, "", "/");
@@ -80,11 +78,9 @@
                         that.form = {
                             title: "",
                             description: "",
-                            username: "",
+                            username: that.randomUser(),
                             file: null
                         };
-
-                        that.form.usernam = that.randomUser();
 
                         that.uploading = false;
                     })
@@ -98,6 +94,7 @@
                 this.form = {
                     title: "",
                     description: "",
+                    username: this.randomUser(),
                     file: null
                 };
                 this.uploading = false;
@@ -112,8 +109,8 @@
                 this.uploading = true;
             },
             hideModal: function(tag) {
-                if (this.showModal === true) {
-                    this.showModal = false;
+                if (this.imgId) {
+                    this.imgId = "";
                     location.hash = "";
                     history.pushState({}, "", "/");
                 }
@@ -202,7 +199,7 @@
     Vue.component("img-modal", {
         // data, methods, mounted
         template: "#modal-template",
-        props: ["imgId", "showModal"],
+        props: ["imgId"],
 
         data: function() {
             return {
@@ -301,10 +298,10 @@
                         .then(function(res) {
                             console.log("Response from POST /comments:", res);
                             var comment = res.data;
-                            that.comments.unshift(comment);
+                            that.comments.push(comment);
                             console.log("All comments:", that.comments);
                             that.form = {
-                                username: this.randomUser(),
+                                username: that.randomUser(),
                                 comment: ""
                             };
                         })
