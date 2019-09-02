@@ -1,5 +1,3 @@
-# Demo
-
 # Overview
 
 Single-page application image board where users can upload images to a gallery, adding comments and tags.

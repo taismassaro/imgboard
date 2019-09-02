@@ -196,7 +196,6 @@ textarea {
     display: none;
     position: absolute;
     left: 0;
-    /* bottom: -1em; */
     top: -1em;
     width: 100%;
     min-height: 100%;
@@ -237,7 +236,6 @@ textarea {
     object-fit: cover;
     width: 100%;
     height: 40em;
-    /* box-shadow: inset 0 2px 4px 0 var(--g900); */
     border-radius: 5px;
 }
 .modal-nav {
