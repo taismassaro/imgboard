@@ -107,7 +107,8 @@ app.post("/upload", uploader.single("file"), s3.upload, (req, res) => {
     const { username, title, description } = req.body;
 
     // DEALING WITH TAGS //
-    const arrayOfTags = req.body.tags.split(",");
+    const noSpaceTags = req.body.tags.replace(/\s/g, "");
+    const arrayOfTags = noSpaceTags.split(",");
     console.log("arrayOfTags", arrayOfTags);
     const uniqueTags = new Set(arrayOfTags);
     console.log("uniqueTags", uniqueTags);
