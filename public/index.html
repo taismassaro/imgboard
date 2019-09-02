@@ -64,17 +64,15 @@
             </section>
 
             <!-- RENDER ALL IMAGES ON PAGE -->
+            <!-- <div > -->
+                <h1 class="tag-title" v-if="tag">Images with tag <span>{{tag}}</span></h1>
+            <!-- </div> -->
             <section id="img-container" v-if="images.length > 0">
-                <div v-if="tag">
-                    <h1>Images with tag {{tag}}</h1>
-                </div>
                     <div class="card" v-for="img in images" :key="img.url">
-                        <div class="card-img">
-                        <a :href="'#' + img.id">
-                            <img :src="img.url" :alt="img.title" />
-                        </a>
-                    </div>
+                            <img class="card-img" :src="img.url" :alt="img.title" />
+                    <a :href="'#' + img.id">
                         <p class="card-title">{{img.title}}</p>
+                        </a>
                     </div>
             </section>
 
@@ -94,8 +92,8 @@
 
                 <!-- ERROR MESSAGE FOR NO IMAGE -->
                 <template v-if="error === 'no image'">
-                    <div class="modal">
-                    <p>Oops, this image doesn't exist.</p>
+                    <div class="modal error">
+                    Oops, this image does not exist.
                 </div>
                 </template>
 
@@ -110,17 +108,19 @@
                     </div>
 
                     <h1 class="modal-title">{{currentImg.title}}</h1>
+
+                    <!-- SHOW TAGS UNDER IMAGE -->
+                    <div id="tags" v-if="tags.length > 0">
+                        <div
+                            v-for="tag in tags"
+                        >
+                            <div @click="selectTag(tag)" class="modal-tag">{{tag}}</div>
+                        </div>
+                    </div>
+
                     <p class="modal-author"> <strong>{{currentImg.username}}</strong> <span>{{currentImg.created_at}}</span></p>
                     <p class="modal-description">{{currentImg.description}}</p>
 
-                <!-- SHOW TAGS UNDER IMAGE -->
-                <div id="tags" v-if="tags.length > 0">
-                    <div
-                        v-for="tag in tags"
-                    >
-                        <div @click="selectTag(tag)" class="modal-tag">{{tag}}</div>
-                    </div>
-                </div>
 
                 <!-- COMMENTS SECTION -->
                 <div id="modal-comments">
@@ -151,8 +151,6 @@
                         ></textarea>
                         <button class="cat-btn" @click="sendComment">comment</button>
                     </form>
-
-
                 </div>
                 </div>
             </div>
