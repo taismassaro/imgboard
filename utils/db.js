@@ -48,6 +48,7 @@ exports.uploadImg = (url, username, title, description, tags) => {
         )
         .then(data => {
             if (tags && tags !== [" "]) {
+                console.log("tags in query:", tags);
                 let id = data.rows[0].id;
                 let count = 1;
                 db.query(
@@ -94,7 +95,7 @@ exports.getTags = imgId => {
 
 exports.getComments = imgId => {
     return db
-        .query(`SELECT * FROM comments WHERE img_id = $1 ORDER BY date DESC`, [
+        .query(`SELECT * FROM comments WHERE img_id = $1 ORDER BY date ASC`, [
             imgId
         ])
         .then(comments => {

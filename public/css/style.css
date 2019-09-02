@@ -210,8 +210,7 @@ textarea {
     position: fixed;
     top: 0;
     left: 0;
-    background: var(--g900);
-    opacity: 0.6;
+    background: hsla(195, 5%, 15%, 0.75);
     z-index: 10;
     overflow: scroll;
 }
@@ -221,7 +220,6 @@ textarea {
     box-shadow: 1px 1px 5px var(--g900);
     background: var(--g100);
     padding: 1em;
-
     border-radius: 5px;
 }
 .modal-img {
@@ -258,6 +256,11 @@ textarea {
     background-color: var(--p100);
     border: 1px solid var(--p500);
     margin-right: 0.8em;
+    cursor: pointer;
+}
+.modal-tag:hover {
+    background: var(--p500);
+    color: var(--p100);
 }
 .modal-title {
     font-weight: 600;

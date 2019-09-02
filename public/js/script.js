@@ -78,11 +78,9 @@
                         that.form = {
                             title: "",
                             description: "",
-                            username: "",
+                            username: that.randomUser(),
                             file: null
                         };
-
-                        that.form.usernam = that.randomUser();
 
                         that.uploading = false;
                     })
@@ -96,6 +94,7 @@
                 this.form = {
                     title: "",
                     description: "",
+                    username: this.randomUser(),
                     file: null
                 };
                 this.uploading = false;
@@ -299,13 +298,12 @@
                         .then(function(res) {
                             console.log("Response from POST /comments:", res);
                             var comment = res.data;
-                            that.comments.unshift(comment);
+                            that.comments.push(comment);
                             console.log("All comments:", that.comments);
                             that.form = {
-                                username: this.randomUser(),
+                                username: that.randomUser(),
                                 comment: ""
                             };
-                            that.randomUser();
                         })
                         .catch(function(error) {
                             console.log("Error in POST /comments", error);

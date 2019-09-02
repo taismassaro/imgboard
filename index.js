@@ -115,7 +115,7 @@ app.post("/upload", uploader.single("file"), s3.upload, (req, res) => {
     const tags = Array.from(uniqueTags);
     console.log("tags", tags);
 
-    db.uploadImg(url, username, title, description)
+    db.uploadImg(url, username, title, description, tags)
         .then(data => {
             console.log("Returned values from uploadImg query:", data);
             res.json(data);
